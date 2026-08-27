@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+# Development version. Replace with production rules before public launch.
