@@ -2,6 +2,11 @@ name: Deploy TEST
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/deploy-test-trigger'
 
 permissions:
   contents: read
@@ -49,7 +54,7 @@ jobs:
         run: |
           STAMP="$(date -u +%Y%m%d_%H%M%S)"
           ssh -i ~/.ssh/id_ed25519 "$TEST_USER@$TEST_HOST" \
-            "mkdir -p '$HOME/deploy-backups/cosmetologist-dev' && if [ -n \"$(find '$TEST_ROOT' -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)\" ]; then tar -C '$TEST_ROOT' -czf '$HOME/deploy-backups/cosmetologist-dev/before_${STAMP}.tar.gz' .; fi"
+            "mkdir -p '$HOME/deploy-backups/cosmetologist-dev'; if find '$TEST_ROOT' -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null | grep -q .; then tar -C '$TEST_ROOT' -czf '$HOME/deploy-backups/cosmetologist-dev/before_${STAMP}.tar.gz' .; fi"
 
       - name: Deploy dev to TEST
         run: |
