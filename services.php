@@ -1,0 +1,11 @@
+<?php
+
+declare(strict_types=1);
+$site=require __DIR__.'/config.php';require __DIR__.'/includes/content.php';require __DIR__.'/includes/layout.php';
+$services=load_content('services');$categories=array_values(array_unique(array_map(fn($s)=>(string)($s['category']??'Услуги'),$services)));
+render_header($site,'services','Услуги','Полный каталог процедур и программ ухода.');render_page_hero('Услуги','Процедуры с понятной<br><em>логикой выбора.</em>','Не каталог «всего подряд», а направления с объяснением задачи, длительности, ориентировочной стоимости и следующего шага.');
+?>
+<main><section class="section"><div class="container" data-filter-group>
+<div class="filter-bar"><button class="filter-btn is-active" data-filter="all">Все</button><?php foreach($categories as $cat):?><button class="filter-btn" data-filter="<?=esc($cat)?>"><?=esc($cat)?></button><?php endforeach;?></div>
+<div class="cards"><?php foreach($services as $service):?><article class="card reveal" data-category="<?=esc((string)$service['category'])?>"><div class="card-meta"><span><?=esc((string)$service['category'])?></span><span><?=esc((string)$service['duration'])?></span></div><div class="card-icon"></div><div class="card-body"><h3><?=esc((string)$service['title'])?></h3><p><?=esc((string)$service['summary'])?></p></div><a class="card-foot" href="/service.php?slug=<?=rawurlencode((string)$service['slug'])?>"><span><?=esc((string)$service['price'])?></span><span>↗</span></a></article><?php endforeach;?></div>
+</div></section><section class="section section-dark"><div class="container statement-grid reveal"><p class="kicker">Не уверены?</p><div><h2>Не нужно угадывать<br><em>название процедуры.</em></h2><p class="lead">Можно начать с консультации и определить подходящий маршрут после оценки состояния кожи.</p><a class="button button-light" href="/#booking">Записаться на консультацию</a></div></div></section></main><?php render_footer($site);?>
