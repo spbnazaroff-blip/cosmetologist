@@ -1,0 +1,86 @@
+<?php
+
+declare(strict_types=1);
+
+function esc(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+function page_title(array $site, string $title = ''): string
+{
+    return $title !== '' ? $title . ' — ' . $site['site_name'] : $site['seo']['title'];
+}
+
+function render_header(array $site, string $active = '', string $title = '', string $description = ''): void
+{
+    $desc = $description !== '' ? $description : $site['seo']['description'];
+    ?>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12100f">
+<meta name="robots" content="<?= esc((string)$site['seo']['robots']) ?>">
+<meta name="description" content="<?= esc($desc) ?>">
+<title><?= esc(page_title($site, $title)) ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css?v=4">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"><span></span></div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="На главную">
+      <span class="brand-mark">É</span><span class="brand-copy"><strong><?= esc((string)$site['site_name']) ?></strong><small>skin atelier</small></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Открыть меню"><span></span><span></span></button>
+    <nav class="main-nav" id="main-nav">
+      <a class="<?= $active === 'services' ? 'is-active' : '' ?>" href="/services.php">Услуги</a>
+      <a class="<?= $active === 'price' ? 'is-active' : '' ?>" href="/price.php">Цены</a>
+      <a class="<?= $active === 'cases' ? 'is-active' : '' ?>" href="/cases.php">Результаты</a>
+      <a class="<?= $active === 'blog' ? 'is-active' : '' ?>" href="/blog.php">Блог</a>
+      <a class="<?= $active === 'videos' ? 'is-active' : '' ?>" href="/videos.php">Видео</a>
+      <a href="/#about">Специалист</a>
+    </nav>
+    <a class="button button-outline header-cta" href="/#booking">Записаться</a>
+  </div>
+</header>
+<?php
+}
+
+function render_page_hero(string $kicker, string $title, string $lead): void
+{
+    ?>
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumbs"><a href="/">Главная</a> / <?= esc(strip_tags($kicker)) ?></div>
+    <div class="page-hero-grid reveal">
+      <h1><?= $title ?></h1>
+      <p class="lead"><?= esc($lead) ?></p>
+    </div>
+  </div>
+</section>
+<?php
+}
+
+function render_footer(array $site): void
+{
+    ?>
+<footer class="site-footer">
+  <div class="container footer-top">
+    <a class="brand" href="/"><span class="brand-mark">É</span><span class="brand-copy"><strong><?= esc((string)$site['site_name']) ?></strong><small>skin atelier</small></span></a>
+    <p>Демонстрационный проект премиального сайта косметолога. Контент, цены, фотографии и контакты перед запуском заменяются на реальные данные специалиста.</p>
+    <nav class="footer-nav"><a href="/services.php">Услуги</a><a href="/price.php">Цены</a><a href="/cases.php">Результаты</a><a href="/blog.php">Блог</a><a href="/videos.php">Видео</a><a href="/#booking">Запись</a></nav>
+  </div>
+  <div class="container footer-bottom"><span>© <?= date('Y') ?> <?= esc((string)$site['site_name']) ?></span><span>Информация на сайте не является медицинской рекомендацией и не заменяет консультацию специалиста.</span><a class="admin-link" href="/admin/">Управление сайтом</a></div>
+</footer>
+<div class="mobile-booking"><a class="button button-dark button-full" href="/#booking">Записаться <span>↗</span></a></div>
+<script src="/assets/js/app.js?v=4" defer></script>
+</body></html>
+<?php
+}
