@@ -2,11 +2,6 @@ name: Deploy TEST
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - README.md
 
 permissions:
   contents: read
@@ -37,15 +32,13 @@ jobs:
 
       - name: Configure SSH
         env:
-          TEST_SSH_KEY: ${{ secrets.TEST_SSH_KEY }}
+          TEST_SSH_KEY_B64: ${{ secrets.TEST_SSH_KEY_B64 }}
         run: |
-          test -n "$TEST_SSH_KEY" || { echo 'Missing repository secret TEST_SSH_KEY'; exit 1; }
+          test -n "$TEST_SSH_KEY_B64" || { echo 'Missing repository secret TEST_SSH_KEY_B64'; exit 1; }
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$TEST_SSH_KEY" | tr -d '\r' | sed -n '/^-----BEGIN OPENSSH PRIVATE KEY-----$/,/^-----END OPENSSH PRIVATE KEY-----$/p' > ~/.ssh/id_ed25519
+          printf '%s' "$TEST_SSH_KEY_B64" | base64 --decode > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          grep -qxF -- '-----BEGIN OPENSSH PRIVATE KEY-----' ~/.ssh/id_ed25519 || { echo 'TEST_SSH_KEY does not contain an OpenSSH private key header'; exit 1; }
-          grep -qxF -- '-----END OPENSSH PRIVATE KEY-----' ~/.ssh/id_ed25519 || { echo 'TEST_SSH_KEY does not contain an OpenSSH private key footer'; exit 1; }
-          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null || { echo 'TEST_SSH_KEY is not a valid OpenSSH private key'; exit 1; }
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null || { echo 'TEST_SSH_KEY_B64 does not decode to a valid OpenSSH private key'; exit 1; }
           ssh-keyscan -H "$TEST_HOST" >> ~/.ssh/known_hosts
 
       - name: Preflight target
