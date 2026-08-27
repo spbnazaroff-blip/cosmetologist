@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/deploy-test-trigger'
+      - 'README.md'
 
 permissions:
   contents: read
