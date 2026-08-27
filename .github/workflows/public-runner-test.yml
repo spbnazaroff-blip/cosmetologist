@@ -1,12 +1,6 @@
-name: Public runner test
+name: Manual validation package
 
 on:
-  push:
-    branches:
-      - dev
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -19,23 +13,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Show runner context
-        run: |
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Ref: $GITHUB_REF"
-          echo "SHA: $GITHUB_SHA"
-          php -v
-
       - name: PHP syntax check
         run: |
+          php -v
           find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
-
       - name: Build deployment package
         run: |
           tar --exclude='.git' --exclude='.github' -czf site.tar.gz .
           ls -lh site.tar.gz
-
       - name: Upload deployment package
         uses: actions/upload-artifact@v4
         with:
