@@ -2,7 +2,7 @@ name: Deploy TEST
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - main
     paths:
@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'deploy/test-run-1'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
