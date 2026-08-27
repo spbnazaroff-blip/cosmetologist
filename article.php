@@ -1,0 +1,7 @@
+<?php
+
+declare(strict_types=1);
+$site=require __DIR__.'/config.php';require __DIR__.'/includes/content.php';require __DIR__.'/includes/layout.php';$slug=(string)($_GET['slug']??'');$article=content_by_slug('articles',$slug);if(!$article){http_response_code(404);$article=['title'=>'Статья не найдена','excerpt'=>'','body'=>'','date'=>'','category'=>'','read_time'=>''];}
+render_header($site,'blog',(string)$article['title'],(string)$article['excerpt']);render_page_hero('Блог',esc((string)$article['title']),(string)$article['excerpt']);
+?>
+<main><section class="section"><div class="container content-shell"><article class="prose reveal"><p class="kicker"><?=esc((string)$article['category'])?> · <?=esc(format_date_ru((string)$article['date']))?> · <?=esc((string)$article['read_time'])?></p><?=render_text((string)$article['body'])?><p class="disclaimer">Материал носит информационный характер и не заменяет очную консультацию специалиста или врача.</p></article><aside><div class="sidebar-card reveal"><p class="kicker">Есть вопрос?</p><h3>Не подбирайте процедуру по статье.</h3><p>Лучше обсудить состояние кожи и ограничения индивидуально.</p><a class="button button-dark button-full" href="/#booking">Записаться</a><a class="button button-outline button-full" style="margin-top:8px" href="/blog.php">Все статьи</a></div></aside></div></section></main><?php render_footer($site);?>
