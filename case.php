@@ -1,0 +1,7 @@
+<?php
+
+declare(strict_types=1);
+$site=require __DIR__.'/config.php';require __DIR__.'/includes/content.php';require __DIR__.'/includes/layout.php';$slug=(string)($_GET['slug']??'');$case=content_by_slug('cases',$slug);if(!$case){http_response_code(404);$case=['title'=>'Кейс не найден','request'=>'','protocol'=>'','result'=>'','period'=>''];}
+render_header($site,'cases',(string)$case['title'],'Кейс: '.(string)$case['title']);render_page_hero('Результаты',esc((string)$case['title']),'Демонстрационный формат кейса: запрос, протокол, срок и результат без преувеличенных обещаний.');
+?>
+<main><section class="section"><div class="container content-shell"><article class="prose reveal"><div class="case-visual" style="min-height:480px;border-radius:28px;overflow:hidden"><span class="case-divider"></span><div class="case-labels"><span>до</span><span>после</span></div></div><h2>Исходный запрос</h2><p><?=esc((string)$case['request'])?></p><h2>Что делали</h2><p><?=esc((string)$case['protocol'])?></p><h2>Результат</h2><p><?=esc((string)$case['result'])?></p><p class="disclaimer">Результат индивидуален. Этот кейс — демонстрация структуры раздела; перед запуском он заменяется реальными данными и материалами с согласия клиента.</p></article><aside><div class="sidebar-card"><p class="kicker">Период</p><h3><?=esc((string)$case['period'])?></h3><a class="button button-dark button-full" href="/#booking">Обсудить мой запрос</a></div></aside></div></section></main><?php render_footer($site);?>
