@@ -1,4 +1,4 @@
 # cosmetologist
 Managed by DSCB
 
-TEST deploy trigger: base64 key retry 3
+TEST deploy trigger: premium content platform run 4
