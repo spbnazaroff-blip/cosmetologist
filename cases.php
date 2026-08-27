@@ -1,0 +1,7 @@
+<?php
+
+declare(strict_types=1);
+$site=require __DIR__.'/config.php';require __DIR__.'/includes/content.php';require __DIR__.'/includes/layout.php';$cases=load_content('cases');
+render_header($site,'cases','Результаты и кейсы','Кейсы с исходным запросом, протоколом и результатом.');render_page_hero('Результаты','Кейсы с контекстом,<br><em>а не витрина обещаний.</em>','Показываем не только визуальную разницу, но и запрос, последовательность работы и срок. Результаты всегда индивидуальны.');
+?>
+<main><section class="section"><div class="container"><div class="case-grid"><?php foreach($cases as $case):?><article class="case-card reveal"><div class="case-visual"><span class="case-divider"></span><div class="case-labels"><span>до</span><span>после</span></div></div><div class="case-copy"><span class="case-period"><?=esc((string)$case['period'])?></span><h3><?=esc((string)$case['title'])?></h3><p><?=esc((string)$case['request'])?></p><a class="text-link" href="/case.php?slug=<?=rawurlencode((string)$case['slug'])?>">Разобрать кейс <span>↗</span></a></div></article><?php endforeach;?></div><p class="disclaimer">Демонстрационные данные. Перед публикацией реальных фото необходимо согласие клиента. Эффект от процедур индивидуален.</p></div></section></main><?php render_footer($site);?>
