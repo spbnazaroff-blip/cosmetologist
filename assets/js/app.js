@@ -4,16 +4,41 @@
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.main-nav');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(pointer:fine)').matches;
+  const root = document.documentElement;
+  document.body.classList.add('motion-ready');
 
-  const onScroll = () => {
+  const motionSections = Array.from(document.querySelectorAll('main > section'));
+  motionSections.forEach(section => section.classList.add('motion-section'));
+
+  let scrollTicking = false;
+  const renderScroll = () => {
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const p = Math.min(1, Math.max(0, window.scrollY / max));
     if (header) header.classList.toggle('scrolled', window.scrollY > 12);
-    if (progress) {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.width = `${max > 0 ? Math.min(100, window.scrollY / max * 100) : 0}%`;
+    if (progress) progress.style.width = `${p * 100}%`;
+    root.style.setProperty('--scroll-p', p.toFixed(4));
+
+    if (!reduced) {
+      const vh = window.innerHeight || 1;
+      motionSections.forEach(section => {
+        const r = section.getBoundingClientRect();
+        const local = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+        section.style.setProperty('--local-p', local.toFixed(3));
+      });
+      const heroFrame = document.querySelector('.hero-frame');
+      if (heroFrame) heroFrame.style.setProperty('--hero-scale', String(1.02 + p * .025));
     }
+    scrollTicking = false;
   };
-  onScroll();
+  const onScroll = () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(renderScroll);
+  };
+  renderScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 
   if (menuButton && nav) {
     menuButton.addEventListener('click', () => {
@@ -58,9 +83,12 @@
       btn.classList.add('is-active');
       const value = data[btn.dataset.focus];
       if (value && title && text) {
-        title.animate([{opacity:.35, transform:'translateY(5px)'},{opacity:1, transform:'none'}], {duration:260});
-        text.animate([{opacity:.35},{opacity:1}], {duration:260});
-        title.textContent = value[0]; text.textContent = value[1];
+        if (!reduced) {
+          title.animate([{opacity:.25, transform:'translateY(10px)'},{opacity:1, transform:'none'}], {duration:380, easing:'cubic-bezier(.2,.8,.2,1)'});
+          text.animate([{opacity:.2, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:430, easing:'ease-out'});
+        }
+        title.textContent = value[0];
+        text.textContent = value[1];
       }
     }));
   }
@@ -89,15 +117,103 @@
     if (success) success.hidden = true;
   }));
 
-  if (!reduced) {
-    const parallax = document.querySelectorAll('[data-parallax]');
+  /* Turn every existing before/after pair into an accessible drag/keyboard slider. */
+  document.querySelectorAll('.before-after').forEach(block => {
+    const figures = block.querySelectorAll(':scope > figure');
+    if (figures.length < 2 || block.classList.contains('ba-enhanced')) return;
+    block.classList.add('ba-enhanced');
+    block.style.setProperty('--split', '50%');
+
+    const range = document.createElement('input');
+    range.type = 'range';
+    range.min = '5';
+    range.max = '95';
+    range.value = '50';
+    range.className = 'ba-range';
+    range.setAttribute('aria-label', 'Сравнить фото до и после');
+
+    const handle = document.createElement('span');
+    handle.className = 'ba-handle';
+    handle.setAttribute('aria-hidden', 'true');
+
+    const setSplit = value => block.style.setProperty('--split', `${value}%`);
+    range.addEventListener('input', () => setSplit(range.value));
+    range.addEventListener('dblclick', () => { range.value = '50'; setSplit(50); });
+    block.append(range, handle);
+  });
+
+  if (!reduced && finePointer) {
+    /* Soft cursor aura. It never replaces the system cursor and has no interaction role. */
+    const aura = document.createElement('div');
+    aura.className = 'cursor-aura';
+    document.body.appendChild(aura);
+    let pointerX = -100;
+    let pointerY = -100;
+    let auraX = -100;
+    let auraY = -100;
+    const drawAura = () => {
+      auraX += (pointerX - auraX) * .18;
+      auraY += (pointerY - auraY) * .18;
+      aura.style.transform = `translate3d(${auraX}px,${auraY}px,0) translate(-50%,-50%)`;
+      requestAnimationFrame(drawAura);
+    };
+    drawAura();
     window.addEventListener('pointermove', event => {
-      const x = (event.clientX / window.innerWidth - .5);
-      const y = (event.clientY / window.innerHeight - .5);
-      parallax.forEach(el => {
-        const strength = Number(el.dataset.parallax || 12);
-        el.style.transform = `translate3d(${x * strength}px, ${y * strength}px, 0)`;
-      });
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      aura.classList.add('is-active');
     }, { passive: true });
+    document.addEventListener('pointerover', event => {
+      aura.classList.toggle('is-hover', Boolean(event.target.closest('a,button,input,.card,.case-card,.video-card')));
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => aura.classList.remove('is-active'));
+
+    /* Hero image moves in the opposite direction of the headline for real depth. */
+    const hero = document.querySelector('.hero');
+    const heroFrame = document.querySelector('.hero-frame');
+    if (hero && heroFrame) {
+      hero.addEventListener('pointermove', event => {
+        const r = hero.getBoundingClientRect();
+        const x = (event.clientX - r.left) / r.width - .5;
+        const y = (event.clientY - r.top) / r.height - .5;
+        heroFrame.style.setProperty('--hero-x', `${x * 14}px`);
+        heroFrame.style.setProperty('--hero-y', `${y * 10}px`);
+      }, { passive: true });
+      hero.addEventListener('pointerleave', () => {
+        heroFrame.style.setProperty('--hero-x', '0px');
+        heroFrame.style.setProperty('--hero-y', '0px');
+      });
+    }
+
+    /* The dark selector gets a slow light source that follows the pointer. */
+    const concern = document.querySelector('.concern-section');
+    if (concern) concern.addEventListener('pointermove', event => {
+      const r = concern.getBoundingClientRect();
+      concern.style.setProperty('--orb-x', `${((event.clientX-r.left)/r.width*100).toFixed(1)}%`);
+      concern.style.setProperty('--orb-y', `${((event.clientY-r.top)/r.height*100).toFixed(1)}%`);
+    }, { passive:true });
+
+    /* Subtle 3D response on editorial cards. */
+    document.querySelectorAll('.card,.case-card,.video-card').forEach(card => {
+      card.addEventListener('pointermove', event => {
+        const r = card.getBoundingClientRect();
+        const x = (event.clientX-r.left)/r.width-.5;
+        const y = (event.clientY-r.top)/r.height-.5;
+        card.style.transform = `perspective(900px) rotateX(${-y*2.2}deg) rotateY(${x*2.4}deg) translateY(-4px)`;
+      }, { passive:true });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+    });
+
+    /* Magnetic movement is intentionally small so buttons remain predictable. */
+    document.querySelectorAll('.button').forEach(button => {
+      button.classList.add('magnetic');
+      button.addEventListener('pointermove', event => {
+        const r = button.getBoundingClientRect();
+        const x = event.clientX - (r.left + r.width/2);
+        const y = event.clientY - (r.top + r.height/2);
+        button.style.transform = `translate3d(${x*.08}px,${y*.10}px,0)`;
+      }, { passive:true });
+      button.addEventListener('pointerleave', () => { button.style.transform = ''; });
+    });
   }
 })();
