@@ -53,7 +53,7 @@ if (is_dir($root)) {
 </head>
 <body>
 <div class="wrap">
-<header class="head"><div><small>ÉLAN SKIN · медиатека</small><h1>Изображения</h1></div><div class="actions"><a class="btn alt" href="/admin/">Контент</a><a class="btn alt" href="/admin/seo.php">SEO</a><a class="btn" href="/" target="_blank">Открыть сайт ↗</a></div></header>
+<header class="head"><div><small>ÉLAN SKIN · медиатека</small><h1>Изображения</h1></div><div class="actions"><a class="btn alt" href="/admin/">Контент</a><a class="btn alt" href="/admin/settings.php">Настройки</a><a class="btn alt" href="/admin/seo.php">SEO</a><a class="btn" href="/" target="_blank">Открыть сайт ↗</a></div></header>
 <?php if($message):?><div class="notice"><?=mesc($message)?></div><?php endif;?>
 <?php if($error):?><div class="notice error"><?=mesc($error)?></div><?php endif;?>
 <section class="panel"><form method="post" enctype="multipart/form-data" class="upload"><input type="hidden" name="csrf" value="<?=mesc(media_csrf())?>"><label class="field"><span>JPG, PNG или WebP до 8 МБ</span><input type="file" name="library_file" accept="image/jpeg,image/png,image/webp" required></label><button class="btn" type="submit">Загрузить</button></form></section>
