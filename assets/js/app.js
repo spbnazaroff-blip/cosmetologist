@@ -4,14 +4,8 @@
   const menuButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.main-nav');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(pointer:fine)').matches;
-  const desktopMotion = !reduced && finePointer && window.matchMedia('(min-width:901px)').matches;
-  const root = document.documentElement;
-  document.body.classList.add('motion-ready');
-  document.body.classList.toggle('rich-motion', desktopMotion);
 
-  const motionSections = Array.from(document.querySelectorAll('main > section'));
-  motionSections.forEach(section => section.classList.add('motion-section'));
+  document.body.classList.add('motion-ready');
 
   let scrollTicking = false;
   const renderScroll = () => {
@@ -19,18 +13,6 @@
     const p = Math.min(1, Math.max(0, window.scrollY / max));
     if (header) header.classList.toggle('scrolled', window.scrollY > 12);
     if (progress) progress.style.width = `${p * 100}%`;
-    root.style.setProperty('--scroll-p', p.toFixed(4));
-
-    if (desktopMotion) {
-      const vh = window.innerHeight || 1;
-      motionSections.forEach(section => {
-        const r = section.getBoundingClientRect();
-        const local = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
-        section.style.setProperty('--local-p', local.toFixed(3));
-      });
-      const heroFrame = document.querySelector('.hero-frame');
-      if (heroFrame) heroFrame.style.setProperty('--hero-scale', String(1.02 + p * .025));
-    }
     scrollTicking = false;
   };
   const onScroll = () => {
@@ -40,20 +22,23 @@
   };
   renderScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
 
   if (menuButton && nav) {
+    const closeMenu = () => {
+      menuButton.setAttribute('aria-expanded', 'false');
+      nav.classList.remove('is-open');
+      document.body.classList.remove('menu-open');
+    };
     menuButton.addEventListener('click', () => {
       const open = menuButton.getAttribute('aria-expanded') === 'true';
       menuButton.setAttribute('aria-expanded', String(!open));
       nav.classList.toggle('is-open', !open);
       document.body.classList.toggle('menu-open', !open);
     });
-    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      menuButton.setAttribute('aria-expanded', 'false');
-      nav.classList.remove('is-open');
-      document.body.classList.remove('menu-open');
-    }));
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeMenu();
+    }, { passive: true });
   }
 
   const reveals = document.querySelectorAll('.reveal');
@@ -66,7 +51,7 @@
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
       });
-    }, { threshold: .08, rootMargin: '0px 0px -35px 0px' });
+    }, { threshold: .06, rootMargin: '0px 0px -24px 0px' });
     reveals.forEach(el => observer.observe(el));
   }
 
@@ -84,14 +69,9 @@
       panel.querySelectorAll('[data-focus]').forEach(b => b.classList.remove('is-active'));
       btn.classList.add('is-active');
       const value = data[btn.dataset.focus];
-      if (value && title && text) {
-        if (!reduced) {
-          title.animate([{opacity:.25, transform:'translateY(10px)'},{opacity:1, transform:'none'}], {duration:380, easing:'cubic-bezier(.2,.8,.2,1)'});
-          text.animate([{opacity:.2, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:430, easing:'ease-out'});
-        }
-        title.textContent = value[0];
-        text.textContent = value[1];
-      }
+      if (!value || !title || !text) return;
+      title.textContent = value[0];
+      text.textContent = value[1];
     }));
   }
 
@@ -119,10 +99,11 @@
     if (success) success.hidden = true;
   }));
 
-  /* Accessible before/after slider with explicit touch dragging and pointer capture. */
+  /* Stable accessible before/after slider for mouse, touch and keyboard. */
   document.querySelectorAll('.before-after').forEach(block => {
     const figures = block.querySelectorAll(':scope > figure');
     if (figures.length < 2 || block.classList.contains('ba-enhanced')) return;
+
     block.classList.add('ba-enhanced');
     block.style.setProperty('--split', '50%');
 
@@ -157,9 +138,7 @@
     range.addEventListener('pointerdown', event => {
       activePointer = event.pointerId;
       document.body.classList.add('slider-dragging');
-      if (typeof range.setPointerCapture === 'function') {
-        try { range.setPointerCapture(event.pointerId); } catch (_) {}
-      }
+      try { range.setPointerCapture?.(event.pointerId); } catch (_) {}
       splitFromClientX(event.clientX);
     });
     range.addEventListener('pointermove', event => {
@@ -177,75 +156,4 @@
 
     block.append(range, handle);
   });
-
-  if (desktopMotion) {
-    /* Soft cursor aura. It never replaces the system cursor and has no interaction role. */
-    const aura = document.createElement('div');
-    aura.className = 'cursor-aura';
-    document.body.appendChild(aura);
-    let pointerX = -100;
-    let pointerY = -100;
-    let auraX = -100;
-    let auraY = -100;
-    const drawAura = () => {
-      auraX += (pointerX - auraX) * .18;
-      auraY += (pointerY - auraY) * .18;
-      aura.style.transform = `translate3d(${auraX}px,${auraY}px,0) translate(-50%,-50%)`;
-      requestAnimationFrame(drawAura);
-    };
-    drawAura();
-    window.addEventListener('pointermove', event => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      aura.classList.add('is-active');
-    }, { passive: true });
-    document.addEventListener('pointerover', event => {
-      aura.classList.toggle('is-hover', Boolean(event.target.closest('a,button,input,.card,.case-card,.video-card')));
-    }, { passive: true });
-    document.addEventListener('mouseleave', () => aura.classList.remove('is-active'));
-
-    const hero = document.querySelector('.hero');
-    const heroFrame = document.querySelector('.hero-frame');
-    if (hero && heroFrame) {
-      hero.addEventListener('pointermove', event => {
-        const r = hero.getBoundingClientRect();
-        const x = (event.clientX - r.left) / r.width - .5;
-        const y = (event.clientY - r.top) / r.height - .5;
-        heroFrame.style.setProperty('--hero-x', `${x * 14}px`);
-        heroFrame.style.setProperty('--hero-y', `${y * 10}px`);
-      }, { passive: true });
-      hero.addEventListener('pointerleave', () => {
-        heroFrame.style.setProperty('--hero-x', '0px');
-        heroFrame.style.setProperty('--hero-y', '0px');
-      });
-    }
-
-    const concern = document.querySelector('.concern-section');
-    if (concern) concern.addEventListener('pointermove', event => {
-      const r = concern.getBoundingClientRect();
-      concern.style.setProperty('--orb-x', `${((event.clientX-r.left)/r.width*100).toFixed(1)}%`);
-      concern.style.setProperty('--orb-y', `${((event.clientY-r.top)/r.height*100).toFixed(1)}%`);
-    }, { passive:true });
-
-    document.querySelectorAll('.card,.case-card,.video-card').forEach(card => {
-      card.addEventListener('pointermove', event => {
-        const r = card.getBoundingClientRect();
-        const x = (event.clientX-r.left)/r.width-.5;
-        const y = (event.clientY-r.top)/r.height-.5;
-        card.style.transform = `perspective(900px) rotateX(${-y*2.2}deg) rotateY(${x*2.4}deg) translateY(-4px)`;
-      }, { passive:true });
-      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
-    });
-
-    document.querySelectorAll('.button').forEach(button => {
-      button.classList.add('magnetic');
-      button.addEventListener('pointermove', event => {
-        const r = button.getBoundingClientRect();
-        const x = event.clientX - (r.left + r.width/2);
-        const y = event.clientY - (r.top + r.height/2);
-        button.style.transform = `translate3d(${x*.08}px,${y*.10}px,0)`;
-      }, { passive:true });
-      button.addEventListener('pointerleave', () => { button.style.transform = ''; });
-    });
-  }
 })();

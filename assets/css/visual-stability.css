@@ -1,0 +1,79 @@
+/* Final visual stability pass: premium motion without cursor flicker or paint-heavy effects. */
+
+.grain{display:none!important}
+body::before{position:absolute!important}
+
+.header-inner{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(17,14,13,.82)!important;
+  box-shadow:0 16px 46px rgba(0,0,0,.16)!important;
+}
+.site-header.scrolled .header-inner{
+  background:rgba(14,12,11,.96)!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.22)!important;
+}
+
+.hero::after{animation:none!important;opacity:.42!important;transform:none!important}
+.hero-frame{
+  transform:scale(1.01)!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+.hero-frame::after{display:none!important}
+.hero-actions .button::after,.magnetic::after{display:none!important}
+
+.concern-section::before{
+  left:70%!important;
+  top:44%!important;
+  transition:none!important;
+}
+.concern-tab:hover{padding-left:22px!important}
+
+.reveal{
+  opacity:0;
+  transform:translate3d(0,22px,0)!important;
+  filter:none!important;
+  clip-path:none!important;
+  transition:opacity .62s ease,transform .72s cubic-bezier(.2,.75,.2,1)!important;
+}
+.reveal.is-visible{opacity:1;transform:none!important}
+.motion-section>.container{transform:none!important}
+
+.cursor-aura{display:none!important}
+
+.service-tile-image img,
+.video-poster img,
+.article-card-image img,
+.article-hero-image img,
+.service-hero-image img,
+.expert-photo img,
+.before-after img{transform:none!important;will-change:auto!important}
+
+.card,.case-card,.video-card,.button{
+  will-change:auto!important;
+  transform-style:flat!important;
+}
+.card:hover,.case-card:hover,.video-card:hover{transform:translateY(-3px)!important}
+.button:hover{transform:translateY(-1px)!important}
+.article-small:nth-child(2),.article-small:hover{transform:none!important}
+.price-row:hover{padding-left:0!important;padding-right:0!important}
+
+.video-poster img,.service-tile-image img{transition:transform .45s ease!important}
+.video-card:hover .video-poster img,.card:hover .service-tile-image img{transform:scale(1.018)!important}
+
+/* Never expose the old inconsistent studio reference in public article previews. */
+.article-small:nth-child(even)::before{background-image:url('/assets/generated/hq-specialist.php?v=1')!important}
+
+.before-after.ba-enhanced figure:nth-child(2){transition:none!important}
+.ba-range{touch-action:pan-y!important}
+
+@media(max-width:900px),(pointer:coarse){
+  .marquee-track{animation:none!important;transform:none!important}
+  .hero::after{display:none!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .marquee-track{animation:none!important}
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}
+}

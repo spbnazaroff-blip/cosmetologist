@@ -80,6 +80,7 @@ function render_header(array $site, string $active = '', string $title = '', str
 <link rel="stylesheet" href="/assets/css/generated-media.css?v=4">
 <link rel="stylesheet" href="/assets/css/creative.css?v=1">
 <link rel="stylesheet" href="/assets/css/mobile-stability.css?v=1">
+<link rel="stylesheet" href="/assets/css/visual-stability.css?v=1">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -140,9 +141,6 @@ function render_generated_reference_section(): void
 
 function render_footer(array $site): void
 {
-    if (basename((string)($_SERVER['SCRIPT_NAME'] ?? '')) === 'index.php') {
-        render_generated_reference_section();
-    }
     $bookingHref = site_booking_href($site);
     $phone = trim((string)($site['phone'] ?? ''));
     $telegram = trim((string)($site['telegram'] ?? ''));
@@ -158,7 +156,7 @@ function render_footer(array $site): void
   <div class="container footer-bottom"><span>© <?= date('Y') ?> <?= esc((string)$site['site_name']) ?></span><span>Информация на сайте не является медицинской рекомендацией и не заменяет консультацию специалиста.</span><a class="admin-link" href="/admin/">Управление сайтом</a></div>
 </footer>
 <div class="mobile-booking"><a class="button button-dark button-full" href="<?=esc($bookingHref)?>">Записаться <span>↗</span></a></div>
-<script src="/assets/js/app.js?v=6" defer></script>
+<script src="/assets/js/app.js?v=7" defer></script>
 </body></html>
 <?php
 }
