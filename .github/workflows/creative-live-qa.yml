@@ -21,15 +21,17 @@ jobs:
         with:
           ref: dev
 
-      - name: Static syntax checks
+      - name: Static syntax and motion checks
         shell: bash
         run: |
           set -euo pipefail
           node --check assets/js/app.js
           find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l >/tmp/php-lint.log
           cat /tmp/php-lint.log
+          ! grep -Eq 'cursor-aura|perspective\(900|magnetic|--orb-x|--hero-x' assets/js/app.js
+          grep -q 'Final visual stability pass' assets/css/visual-stability.css
 
-      - name: Live routes and assets
+      - name: Live routes assets and generated images
         shell: bash
         run: |
           set -euo pipefail
@@ -57,20 +59,39 @@ jobs:
           done
 
           curl -fsSL --max-time 20 "${BASE_URL}/assets/css/creative.css?v=1" -o /tmp/creative.css
-          grep -q 'creative editorial motion layer' /tmp/creative.css
           curl -fsSL --max-time 20 "${BASE_URL}/assets/css/mobile-stability.css?v=1" -o /tmp/mobile-stability.css
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/css/visual-stability.css?v=1" -o /tmp/visual-stability.css
+          grep -q 'creative editorial motion layer' /tmp/creative.css
           grep -q 'Mobile/touch stability layer' /tmp/mobile-stability.css
-          curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=6" -o /tmp/app.js
-          grep -q 'explicit touch dragging' /tmp/app.js
+          grep -q 'Final visual stability pass' /tmp/visual-stability.css
+
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=7" -o /tmp/app.js
+          grep -q 'Stable accessible before/after slider' /tmp/app.js
+          ! grep -Eq 'cursor-aura|perspective\(900|magnetic|--orb-x|--hero-x' /tmp/app.js
+
           curl -fsSL --max-time 20 "${BASE_URL}/" -o /tmp/home.html
           grep -q 'creative.css?v=1' /tmp/home.html
           grep -q 'mobile-stability.css?v=1' /tmp/home.html
-          grep -q 'app.js?v=6' /tmp/home.html
+          grep -q 'visual-stability.css?v=1' /tmp/home.html
+          grep -q 'app.js?v=7' /tmp/home.html
 
-          curl -fsSL --max-time 20 "${BASE_URL}/assets/generated/hq-treatment.php?v=1" -o /tmp/treatment.webp
-          curl -fsSL --max-time 20 "${BASE_URL}/assets/generated/hq-specialist.php?v=1" -o /tmp/specialist.webp
-          test "$(wc -c </tmp/treatment.webp)" -gt 5000
-          test "$(wc -c </tmp/specialist.webp)" -gt 5000
+          images=(
+            hq-treatment.php
+            hq-specialist.php
+            products.php
+            ref-case-before.php
+            ref-case-after-glow.php
+            ref-case-after-tone.php
+          )
+          for image in "${images[@]}"; do
+            out="/tmp/${image%.php}.webp"
+            curl -fsSL --max-time 20 "${BASE_URL}/assets/generated/${image}?qa=1" -o "$out"
+            bytes="$(wc -c <"$out")"
+            echo "$image -> $bytes bytes"
+            test "$bytes" -gt 5000
+            test "$(head -c 4 "$out")" = 'RIFF'
+            test "$(dd if="$out" bs=1 skip=8 count=4 2>/dev/null)" = 'WEBP'
+          done
 
       - name: Headless Chrome interaction smoke test
         shell: bash
@@ -86,11 +107,12 @@ jobs:
             --disable-dev-shm-usage \
             --window-size=1440,1100 \
             --virtual-time-budget=6000 \
-            --dump-dom "${BASE_URL}/?qa=creative" \
+            --dump-dom "${BASE_URL}/?qa=stable" \
             >/tmp/dom-desktop.html 2>/tmp/chrome-desktop.log
           grep -q 'ba-enhanced' /tmp/dom-desktop.html
           grep -q 'ba-range' /tmp/dom-desktop.html
           grep -q 'motion-ready' /tmp/dom-desktop.html
+          ! grep -q 'cursor-aura' /tmp/dom-desktop.html
           if grep -Eqi 'Uncaught (SyntaxError|ReferenceError|TypeError)|SyntaxError:|ReferenceError:|TypeError:' /tmp/chrome-desktop.log; then
             cat /tmp/chrome-desktop.log
             exit 1
@@ -103,7 +125,7 @@ jobs:
             --disable-dev-shm-usage \
             --window-size=390,844 \
             --virtual-time-budget=4500 \
-            --dump-dom "${BASE_URL}/cases.php?qa=mobile" \
+            --dump-dom "${BASE_URL}/cases.php?qa=mobile-stable" \
             >/tmp/dom-mobile.html 2>/tmp/chrome-mobile.log
           grep -q 'ba-enhanced' /tmp/dom-mobile.html
           grep -q 'main-nav' /tmp/dom-mobile.html
@@ -123,7 +145,6 @@ jobs:
             done
           fi
           test -n "$DRIVER"
-          echo "Using $DRIVER"
           "$DRIVER" --port=9515 --allowed-ips=127.0.0.1 >/tmp/chromedriver.log 2>&1 &
           DRIVER_PID=$!
           trap 'kill $DRIVER_PID 2>/dev/null || true' EXIT
@@ -134,89 +155,68 @@ jobs:
 
           python3 - <<'PY'
           import json, os, time, urllib.request
-
           BASE = 'http://127.0.0.1:9515'
           SITE = os.environ['BASE_URL']
-
           def req(method, path, data=None):
               body = None if data is None else json.dumps(data).encode()
               r = urllib.request.Request(BASE + path, data=body, method=method)
-              if body is not None:
-                  r.add_header('Content-Type', 'application/json')
+              if body is not None: r.add_header('Content-Type', 'application/json')
               with urllib.request.urlopen(r, timeout=20) as resp:
                   return json.loads(resp.read().decode())
-
-          session = req('POST', '/session', {
-              'capabilities': {'alwaysMatch': {
-                  'browserName': 'chrome',
-                  'goog:chromeOptions': {'args': [
-                      '--headless=new', '--no-sandbox', '--disable-gpu',
-                      '--disable-dev-shm-usage', '--window-size=390,844'
-                  ]}
-              }}
-          })['value']['sessionId']
+          session = req('POST', '/session', {'capabilities': {'alwaysMatch': {
+              'browserName': 'chrome',
+              'goog:chromeOptions': {'args': ['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--window-size=390,844']}
+          }}})['value']['sessionId']
           try:
-              req('POST', f'/session/{session}/url', {'url': SITE + '/cases.php?qa=touch'})
+              req('POST', f'/session/{session}/url', {'url': SITE + '/cases.php?qa=touch-stable'})
               time.sleep(2.5)
-
-              def js(script, args=None):
-                  return req('POST', f'/session/{session}/execute/sync', {
-                      'script': script, 'args': args or []
-                  })['value']
-
+              def js(script):
+                  return req('POST', f'/session/{session}/execute/sync', {'script': script, 'args': []})['value']
               state = js('''
-                const r=document.querySelector('.ba-range');
-                if(!r) return null;
-                r.scrollIntoView({block:'center'});
-                const b=r.closest('.before-after');
-                const rect=r.getBoundingClientRect();
-                return {x:rect.x,y:rect.y,w:rect.width,h:rect.height,split:b.style.getPropertyValue('--split')};
-              ''')
-              if not state or state['w'] < 200:
-                  raise SystemExit('Mobile slider not found or too small')
-              time.sleep(.3)
-              state = js('''
-                const r=document.querySelector('.ba-range');
-                const rect=r.getBoundingClientRect();
+                const r=document.querySelector('.ba-range'); if(!r) return null;
+                r.scrollIntoView({block:'center'}); const rect=r.getBoundingClientRect();
                 return {x:rect.x,y:rect.y,w:rect.width,h:rect.height};
               ''')
-              x1 = round(state['x'] + state['w'] * .45)
-              x2 = round(state['x'] + state['w'] * .78)
-              y = round(state['y'] + state['h'] * .5)
-
-              req('POST', f'/session/{session}/actions', {'actions': [{
-                  'type':'pointer','id':'finger','parameters':{'pointerType':'touch'},
-                  'actions':[
-                      {'type':'pointerMove','duration':0,'origin':'viewport','x':x1,'y':y},
-                      {'type':'pointerDown','button':0},
-                      {'type':'pointerMove','duration':550,'origin':'viewport','x':x2,'y':y},
-                      {'type':'pointerUp','button':0}
-                  ]
-              }]})
+              if not state or state['w'] < 200: raise SystemExit('Mobile slider missing')
+              time.sleep(.3)
+              state = js('''const r=document.querySelector('.ba-range');const x=r.getBoundingClientRect();return {x:x.x,y:x.y,w:x.width,h:x.height};''')
+              x1=round(state['x']+state['w']*.45); x2=round(state['x']+state['w']*.78); y=round(state['y']+state['h']*.5)
+              req('POST', f'/session/{session}/actions', {'actions':[{'type':'pointer','id':'finger','parameters':{'pointerType':'touch'},'actions':[
+                  {'type':'pointerMove','duration':0,'origin':'viewport','x':x1,'y':y},
+                  {'type':'pointerDown','button':0},
+                  {'type':'pointerMove','duration':550,'origin':'viewport','x':x2,'y':y},
+                  {'type':'pointerUp','button':0}
+              ]}]})
               time.sleep(.4)
-
-              result = js('''
-                const b=document.querySelector('.before-after.ba-enhanced');
-                const c=b?.querySelector(':scope > .ba-range');
-                const container=document.querySelector('.motion-section > .container');
-                return {
-                  split: parseFloat(c?.value || '0'),
-                  noOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
-                  motionTransform: container ? getComputedStyle(container).transform : 'none',
-                  touchAction: c ? getComputedStyle(c).touchAction : ''
-                };
+              result=js('''
+                const c=document.querySelector('.ba-range');
+                return {split:parseFloat(c?.value||'0'),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,touchAction:c?getComputedStyle(c).touchAction:''};
               ''')
               print('Touch QA:', result)
-              if result['split'] < 65:
-                  raise SystemExit(f"Touch drag did not move slider enough: {result['split']}")
-              if not result['noOverflow']:
-                  raise SystemExit('Horizontal overflow detected on mobile')
-              if result['motionTransform'] != 'none':
-                  raise SystemExit(f"Continuous section transform still active on mobile: {result['motionTransform']}")
-              if 'pan-y' not in result['touchAction']:
-                  raise SystemExit(f"Unexpected touch-action: {result['touchAction']}")
+              if result['split'] < 65: raise SystemExit('Touch drag failed')
+              if result['overflow'] > 1: raise SystemExit('Horizontal overflow detected')
+              if 'pan-y' not in result['touchAction']: raise SystemExit('Unexpected touch-action')
           finally:
               try: req('DELETE', f'/session/{session}')
               except Exception: pass
           PY
-          echo 'Live browser + real touch drag QA passed.'
+
+      - name: Capture visual QA screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          mkdir -p /tmp/visual-qa
+          "$CHROME" --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=1440,1200 --virtual-time-budget=4500 --screenshot=/tmp/visual-qa/home-desktop.png "${BASE_URL}/?qa=screenshot-desktop" >/tmp/shot1.log 2>&1
+          "$CHROME" --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --virtual-time-budget=4500 --screenshot=/tmp/visual-qa/home-mobile.png "${BASE_URL}/?qa=screenshot-mobile" >/tmp/shot2.log 2>&1
+          "$CHROME" --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --virtual-time-budget=4500 --screenshot=/tmp/visual-qa/cases-mobile.png "${BASE_URL}/cases.php?qa=screenshot-cases" >/tmp/shot3.log 2>&1
+          test -s /tmp/visual-qa/home-desktop.png
+          test -s /tmp/visual-qa/home-mobile.png
+          test -s /tmp/visual-qa/cases-mobile.png
+
+      - name: Upload visual QA screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-qa-stable
+          path: /tmp/visual-qa/*.png
+          retention-days: 2
