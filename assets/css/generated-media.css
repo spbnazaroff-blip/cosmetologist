@@ -1,4 +1,4 @@
-/* Generated demo imagery: local references. Keep assets crisp at desktop sizes. */
+/* Generated demo imagery: static local WebP references, no external stock dependency. */
 .hero-frame{
   position:absolute;
   inset:0 0 50px 54px;
@@ -6,24 +6,51 @@
   border:1px solid rgba(255,255,255,.12);
   border-radius:34px;
   background:
-    linear-gradient(180deg,rgba(20,16,14,.02),rgba(20,16,14,.20)),
-    url('/assets/generated/treatment.php') center 42%/cover no-repeat;
+    linear-gradient(180deg,rgba(20,16,14,.02),rgba(20,16,14,.24)),
+    url('/assets/images/generated/treatment.webp') center 50%/cover no-repeat;
   box-shadow:0 32px 90px rgba(23,17,14,.24);
 }
 .hero-frame .art-face,.hero-frame .art-neck,.hero-frame .art-orbit{display:none!important}
 
-/* The old single compressed moodboard was intentionally removed from public view:
-   it was useful as an internal storyboard, but a single raster contact sheet looked soft
-   when enlarged in the browser. Individual generated references remain in content cards. */
+/* The old compressed contact sheet remains internal only. */
 .generated-reference-section{display:none!important}
 
-.service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img{
+.service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img,.article-small-thumb img{
   image-rendering:auto;
   filter:none;
   transform:translateZ(0);
 }
 .service-tile-image img,.video-poster img{width:100%;height:100%;object-fit:cover}
 
+/* Specialist section: the expert must be visually present, not only described in text. */
+.expert-feature{
+  display:grid;
+  grid-template-columns:minmax(320px,.88fr) minmax(0,1.12fr);
+  gap:clamp(38px,6vw,86px);
+  align-items:center;
+}
+.expert-photo{
+  min-height:540px;
+  overflow:hidden;
+  border-radius:30px;
+  background:#ddd1c4;
+  box-shadow:0 28px 70px rgba(45,34,28,.13);
+}
+.expert-photo img{display:block;width:100%;height:100%;min-height:540px;object-fit:cover;object-position:center 38%}
+.expert-copy .kicker{margin-bottom:24px}
+.expert-copy h2{margin-top:0}
+
+/* Give every compact Journal item a real visual thumbnail as well. */
+.article-small{display:grid;grid-template-columns:150px 1fr;column-gap:22px;align-items:start}
+.article-small-thumb{grid-row:1 / span 5;width:150px;height:126px;border-radius:18px;overflow:hidden;background:#ddd1c4}
+.article-small-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+
 @media(max-width:900px){
-  .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 42%}
+  .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 50%}
+  .expert-feature{grid-template-columns:1fr;gap:30px}
+  .expert-photo,.expert-photo img{min-height:430px}
+}
+@media(max-width:620px){
+  .article-small{grid-template-columns:92px 1fr;column-gap:15px}
+  .article-small-thumb{width:92px;height:92px;border-radius:14px}
 }
