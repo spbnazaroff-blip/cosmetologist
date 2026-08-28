@@ -18,9 +18,10 @@ function media_generated_assets(): array
         'treatment' => '/assets/generated/treatment.php',
         'products' => '/assets/generated/products.php',
         'video' => '/assets/generated/video.php',
-        'before' => '/assets/generated/case-before.php',
-        'after' => '/assets/generated/case-after.php',
-        'references' => '/assets/generated/references.php',
+        'before' => '/assets/generated/ref-case-before.php',
+        'after' => '/assets/generated/ref-case-after-glow.php',
+        'after_tone' => '/assets/generated/ref-case-after-tone.php',
+        'references' => '/assets/generated/ref-all-generated.php',
     ];
 }
 
@@ -71,8 +72,12 @@ function media_case_image(array $case, string $side): string
     $field = $side === 'after' ? 'after_image' : 'before_image';
     $candidate = media_safe_url((string)($case[$field] ?? ''));
     if ($candidate !== '') return $candidate;
+
     $generated = media_generated_assets();
-    return $side === 'after' ? $generated['after'] : $generated['before'];
+    if ($side !== 'after') return $generated['before'];
+
+    $slug = (string)($case['slug'] ?? '');
+    return $slug === 'rovnyj-ton-i-siyanie' ? $generated['after_tone'] : $generated['after'];
 }
 
 function media_reference_board_url(): string
