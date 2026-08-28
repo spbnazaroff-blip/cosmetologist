@@ -11,25 +11,38 @@ function media_safe_url(string $value): string
     return in_array($scheme, ['http','https'], true) ? $value : '';
 }
 
-function media_demo_maps(): array
+function media_generated_assets(): array
 {
     return [
+        'specialist' => '/assets/generated/specialist-studio.php',
+        'treatment' => '/assets/generated/treatment.php',
+        'products' => '/assets/generated/products.php',
+        'before' => '/assets/generated/case-before.php',
+        'after' => '/assets/generated/case-after.php',
+        'references' => '/assets/generated/references.php',
+    ];
+}
+
+function media_demo_maps(): array
+{
+    $g = media_generated_assets();
+    return [
         'services' => [
-            'diagnostika-kozhi' => 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1400&q=86',
-            'glubokoe-ochishchenie' => 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1400&q=86',
-            'uvlazhnenie-glow' => 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=86',
-            'obnovlenie-kozhi' => 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1400&q=86',
-            'lifting-uhod' => 'https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=1400&q=86',
-            'personalnyj-kurs' => 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1400&q=86',
+            'diagnostika-kozhi' => $g['specialist'],
+            'glubokoe-ochishchenie' => $g['treatment'],
+            'uvlazhnenie-glow' => $g['treatment'],
+            'obnovlenie-kozhi' => $g['products'],
+            'lifting-uhod' => $g['treatment'],
+            'personalnyj-kurs' => $g['specialist'],
         ],
         'articles' => [
-            'kak-ponyat-chto-narushen-barer-kozhi' => 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=1600&q=86',
-            'minimalnyj-domashnij-uhod' => 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1600&q=86',
-            'zachem-konsultaciya-pered-proceduroj' => 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=86',
+            'kak-ponyat-chto-narushen-barer-kozhi' => $g['products'],
+            'minimalnyj-domashnij-uhod' => $g['products'],
+            'zachem-konsultaciya-pered-proceduroj' => $g['specialist'],
         ],
         'videos' => [
-            'video-demo-1' => 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1600&q=86',
-            'video-demo-2' => 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=1600&q=86',
+            'video-demo-1' => $g['specialist'],
+            'video-demo-2' => $g['treatment'],
         ],
     ];
 }
@@ -42,7 +55,8 @@ function media_cover(array $item, string $type): string
     }
     $key = (string)($item['slug'] ?? $item['id'] ?? '');
     $maps = media_demo_maps();
-    return (string)($maps[$type][$key] ?? 'https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=1600&q=86');
+    $generated = media_generated_assets();
+    return (string)($maps[$type][$key] ?? $generated['specialist']);
 }
 
 function media_alt(array $item, string $fallback = ''): string
@@ -56,23 +70,12 @@ function media_case_image(array $case, string $side): string
     $field = $side === 'after' ? 'after_image' : 'before_image';
     $candidate = media_safe_url((string)($case[$field] ?? ''));
     if ($candidate !== '') return $candidate;
+    $generated = media_generated_assets();
+    return $side === 'after' ? $generated['after'] : $generated['before'];
+}
 
-    $slug = (string)($case['slug'] ?? '');
-    $sets = [
-        'vosstanovlenie-komforta' => [
-            'before' => 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=900&q=84',
-            'after' => 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=900&q=84',
-        ],
-        'rovnyj-ton-i-siyanie' => [
-            'before' => 'https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=900&q=84',
-            'after' => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=84',
-        ],
-        'rabota-s-teksturoj' => [
-            'before' => 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=84',
-            'after' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=84',
-        ],
-    ];
-    return (string)($sets[$slug][$side] ?? ($side === 'after'
-        ? 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=900&q=84'
-        : 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=900&q=84'));
+function media_reference_board_url(): string
+{
+    $generated = media_generated_assets();
+    return $generated['references'];
 }
