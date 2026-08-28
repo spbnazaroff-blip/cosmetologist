@@ -1,4 +1,4 @@
-/* Generated demo imagery: local references. Keep assets crisp at desktop sizes. */
+/* Generated demo imagery: static local WebP references, no external stock dependency. */
 .hero-frame{
   position:absolute;
   inset:0 0 50px 54px;
@@ -6,15 +6,13 @@
   border:1px solid rgba(255,255,255,.12);
   border-radius:34px;
   background:
-    linear-gradient(180deg,rgba(20,16,14,.02),rgba(20,16,14,.20)),
-    url('/assets/generated/treatment.php') center 42%/cover no-repeat;
+    linear-gradient(180deg,rgba(20,16,14,.02),rgba(20,16,14,.24)),
+    url('/assets/images/generated/treatment.webp') center 50%/cover no-repeat;
   box-shadow:0 32px 90px rgba(23,17,14,.24);
 }
 .hero-frame .art-face,.hero-frame .art-neck,.hero-frame .art-orbit{display:none!important}
 
-/* The old single compressed moodboard was intentionally removed from public view:
-   it was useful as an internal storyboard, but a single raster contact sheet looked soft
-   when enlarged in the browser. Individual generated references remain in content cards. */
+/* The old compressed contact sheet remains internal only. */
 .generated-reference-section{display:none!important}
 
 .service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img{
@@ -24,6 +22,50 @@
 }
 .service-tile-image img,.video-poster img{width:100%;height:100%;object-fit:cover}
 
+/* Specialist section: generated portrait/reference becomes part of the composition. */
+#about{position:relative;overflow:hidden}
+#about::before{
+  content:"";
+  position:absolute;
+  inset:34px auto 34px 4.5%;
+  width:min(38vw,560px);
+  border-radius:30px;
+  background:url('/assets/images/generated/specialist.webp') center 38%/cover no-repeat;
+  box-shadow:0 28px 70px rgba(45,34,28,.13);
+}
+#about .statement-grid{position:relative;z-index:1;padding-left:min(42vw,610px);grid-template-columns:120px minmax(0,1fr)}
+#about .statement-grid>div{padding:28px 0}
+
+/* Every compact Journal item gets a photo even though the legacy markup is text-only. */
+.article-small{
+  position:relative;
+  padding-left:174px!important;
+  min-height:138px;
+}
+.article-small::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:150px;
+  height:126px;
+  border-radius:18px;
+  background:url('/assets/images/generated/products.webp') center/cover no-repeat;
+}
+.article-small:nth-child(even)::before{background-image:url('/assets/images/generated/specialist.webp')}
+
+@media(max-width:1100px){
+  #about::before{left:3%;width:38vw}
+  #about .statement-grid{padding-left:41vw;grid-template-columns:100px minmax(0,1fr)}
+}
 @media(max-width:900px){
-  .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 42%}
+  .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 50%}
+  #about{padding-top:0}
+  #about::before{position:relative;display:block;inset:auto;width:calc(100% - 36px);height:480px;margin:0 18px 38px;background-position:center 30%}
+  #about .statement-grid{padding-left:0;grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  #about::before{height:390px;border-radius:22px}
+  .article-small{padding-left:108px!important;min-height:98px}
+  .article-small::before{width:92px;height:92px;border-radius:14px}
 }
