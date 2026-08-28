@@ -14,12 +14,14 @@ function media_safe_url(string $value): string
 function media_generated_assets(): array
 {
     return [
-        // Static generated WebP files. No PHP/base64 image wrappers: browsers receive
-        // ordinary image assets, which is more reliable and keeps desktop rendering crisp.
-        'specialist' => '/assets/images/generated/specialist.webp',
-        'treatment' => '/assets/images/generated/treatment.webp',
-        'products' => '/assets/images/generated/products.webp',
-        'video' => '/assets/images/generated/specialist.webp',
+        // Full generated WebP files are reconstructed from validated local chunks.
+        // This avoids the previously truncated binary files that rendered as empty beige cards.
+        'specialist' => '/assets/generated/hq-specialist.php?v=1',
+        'treatment' => '/assets/generated/hq-treatment.php?v=1',
+        // Until the rest of the generated pack is uploaded in full, reuse the two verified
+        // references rather than serving corrupted placeholders.
+        'products' => '/assets/generated/hq-specialist.php?v=1',
+        'video' => '/assets/generated/hq-treatment.php?v=1',
         // Portrait references are kept only for clearly labelled demo cases.
         'before' => '/assets/generated/ref-case-before.php',
         'after' => '/assets/generated/ref-case-after-glow.php',

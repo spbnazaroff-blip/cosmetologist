@@ -46,7 +46,7 @@ function render_header(array $site, string $active = '', string $title = '', str
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
 <link rel="stylesheet" href="/assets/css/premium.css?v=1">
-<link rel="stylesheet" href="/assets/css/generated-media.css?v=2">
+<link rel="stylesheet" href="/assets/css/generated-media.css?v=3">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
