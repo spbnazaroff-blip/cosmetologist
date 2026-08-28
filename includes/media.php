@@ -17,6 +17,7 @@ function media_generated_assets(): array
         'specialist' => '/assets/generated/specialist-studio.php',
         'treatment' => '/assets/generated/treatment.php',
         'products' => '/assets/generated/products.php',
+        'video' => '/assets/generated/video.php',
         'before' => '/assets/generated/case-before.php',
         'after' => '/assets/generated/case-after.php',
         'references' => '/assets/generated/references.php',
@@ -41,8 +42,8 @@ function media_demo_maps(): array
             'zachem-konsultaciya-pered-proceduroj' => $g['specialist'],
         ],
         'videos' => [
-            'video-demo-1' => $g['specialist'],
-            'video-demo-2' => $g['treatment'],
+            'video-demo-1' => $g['video'],
+            'video-demo-2' => $g['video'],
         ],
     ];
 }
