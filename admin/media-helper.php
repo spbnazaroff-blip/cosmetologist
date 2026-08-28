@@ -17,6 +17,20 @@ function admin_image_fields(): array
     return ['cover_image','before_image','after_image','og_image'];
 }
 
+function admin_detect_mime(string $file): string
+{
+    if (class_exists('finfo')) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($file);
+        if (is_string($mime) && $mime !== '') return $mime;
+    }
+    if (function_exists('mime_content_type')) {
+        $mime = mime_content_type($file);
+        if (is_string($mime) && $mime !== '') return $mime;
+    }
+    return '';
+}
+
 function admin_upload_image(string $field): ?string
 {
     $key = $field . '_file';
@@ -32,8 +46,7 @@ function admin_upload_image(string $field): ?string
     if ($tmp === '' || !is_uploaded_file($tmp)) throw new RuntimeException('Некорректный загруженный файл.');
     if ($size <= 0 || $size > 8 * 1024 * 1024) throw new RuntimeException('Изображение должно быть не больше 8 МБ.');
 
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = (string)$finfo->file($tmp);
+    $mime = admin_detect_mime($tmp);
     $allowed = [
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
@@ -46,6 +59,7 @@ function admin_upload_image(string $field): ?string
     if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
         throw new RuntimeException('Не удалось создать папку assets/uploads.');
     }
+    if (!is_writable($dir)) throw new RuntimeException('Папка assets/uploads недоступна для записи.');
 
     $name = date('Ymd-His') . '-' . bin2hex(random_bytes(8)) . '.' . $allowed[$mime];
     $target = $dir . '/' . $name;
