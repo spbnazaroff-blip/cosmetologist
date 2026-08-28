@@ -14,10 +14,12 @@ function media_safe_url(string $value): string
 function media_generated_assets(): array
 {
     return [
-        'specialist' => '/assets/generated/specialist-studio.php',
+        // Primary generated references upgraded for crisp desktop rendering.
+        'specialist' => '/assets/generated/treatment.php',
         'treatment' => '/assets/generated/treatment.php',
         'products' => '/assets/generated/products.php',
-        'video' => '/assets/generated/video.php',
+        'video' => '/assets/generated/treatment.php',
+        // Portrait references are kept only for clearly labelled demo cases.
         'before' => '/assets/generated/ref-case-before.php',
         'after' => '/assets/generated/ref-case-after-glow.php',
         'after_tone' => '/assets/generated/ref-case-after-tone.php',
@@ -30,21 +32,21 @@ function media_demo_maps(): array
     $g = media_generated_assets();
     return [
         'services' => [
-            'diagnostika-kozhi' => $g['specialist'],
+            'diagnostika-kozhi' => $g['treatment'],
             'glubokoe-ochishchenie' => $g['treatment'],
             'uvlazhnenie-glow' => $g['treatment'],
             'obnovlenie-kozhi' => $g['products'],
             'lifting-uhod' => $g['treatment'],
-            'personalnyj-kurs' => $g['specialist'],
+            'personalnyj-kurs' => $g['products'],
         ],
         'articles' => [
             'kak-ponyat-chto-narushen-barer-kozhi' => $g['products'],
             'minimalnyj-domashnij-uhod' => $g['products'],
-            'zachem-konsultaciya-pered-proceduroj' => $g['specialist'],
+            'zachem-konsultaciya-pered-proceduroj' => $g['treatment'],
         ],
         'videos' => [
-            'video-demo-1' => $g['video'],
-            'video-demo-2' => $g['video'],
+            'video-demo-1' => $g['treatment'],
+            'video-demo-2' => $g['products'],
         ],
     ];
 }
@@ -58,7 +60,7 @@ function media_cover(array $item, string $type): string
     $key = (string)($item['slug'] ?? $item['id'] ?? '');
     $maps = media_demo_maps();
     $generated = media_generated_assets();
-    return (string)($maps[$type][$key] ?? $generated['specialist']);
+    return (string)($maps[$type][$key] ?? $generated['treatment']);
 }
 
 function media_alt(array $item, string $fallback = ''): string
