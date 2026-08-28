@@ -1,0 +1,72 @@
+/* Mobile/touch stability layer. Loaded last on purpose. */
+.before-after.ba-enhanced{touch-action:pan-y}
+.before-after.ba-enhanced figure:nth-child(2) figcaption{left:auto;right:18px}
+.ba-range{
+  touch-action:pan-y;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.ba-range:focus-visible{outline:2px solid #b78c6d;outline-offset:-5px;border-radius:24px}
+.slider-dragging .mobile-booking{opacity:.12;transform:translateY(calc(100% + 18px));pointer-events:none}
+
+@media (max-width:900px), (pointer:coarse){
+  /* Continuous scroll-parallax looked good on desktop but created mobile micro-jumps. */
+  .motion-section>.container{transform:none!important}
+  .hero-frame{
+    --hero-x:0px!important;
+    --hero-y:0px!important;
+    --hero-scale:1.02!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  .cards .card,.case-card,.video-card,.button{will-change:auto!important}
+
+  /* Mobile reveal keeps the motion, but drops blur/clip-path repaint cost. */
+  .reveal{
+    opacity:0;
+    filter:none!important;
+    clip-path:none!important;
+    transform:translate3d(0,18px,0)!important;
+    transition:opacity .5s ease,transform .55s cubic-bezier(.2,.8,.2,1)!important;
+  }
+  .reveal.is-visible{opacity:1;transform:none!important}
+
+  /* Fixed blurred layers are a common source of scroll judder on mobile browsers. */
+  .header-inner,.site-header.scrolled{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .site-header.scrolled{background:rgba(15,13,12,.96)!important}
+  .grain{display:none}
+
+  /* Keep creative motion, but stop infinite paint-heavy effects on touch screens. */
+  .hero::after,.hero-frame::after{animation:none!important}
+  .marquee-track{animation-duration:36s;will-change:transform}
+  .concern-section::before{transition:none!important}
+
+  /* Touch slider UX: larger handle, visible labels, smooth horizontal comparison. */
+  .before-after.ba-enhanced{cursor:default!important}
+  .before-after.ba-enhanced figure:nth-child(2){transition:none!important}
+  .ba-range{cursor:ew-resize!important}
+  .ba-handle{width:52px!important;box-shadow:0 10px 28px rgba(0,0,0,.22)!important}
+  .ba-handle::before{content:'‹  ›'!important;letter-spacing:0!important;padding:0!important}
+
+  /* Avoid accidental sideways page movement while dragging cards/sliders. */
+  html,body{overscroll-behavior-x:none}
+  main,.section,.case-card,.before-after{max-width:100%}
+
+  .mobile-booking{transition:opacity .22s ease,transform .28s cubic-bezier(.2,.8,.2,1)!important}
+}
+
+@media(max-width:620px){
+  .before-after.ba-enhanced{min-height:410px!important}
+  .before-after.ba-enhanced figcaption{top:14px!important}
+  .before-after.ba-enhanced figure:first-child figcaption{left:14px!important}
+  .before-after.ba-enhanced figure:nth-child(2) figcaption{right:14px!important}
+  .ba-handle{width:54px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .mobile-booking{transition:none!important}
+  .marquee-track{animation:none!important}
+}
