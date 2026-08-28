@@ -43,10 +43,10 @@ function render_header(array $site, string $active = '', string $title = '', str
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://images.unsplash.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
 <link rel="stylesheet" href="/assets/css/premium.css?v=1">
+<link rel="stylesheet" href="/assets/css/generated-media.css?v=1">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -86,8 +86,29 @@ function render_page_hero(string $kicker, string $title, string $lead): void
 <?php
 }
 
+function render_generated_reference_section(): void
+{
+    ?>
+<section class="generated-reference-section" aria-label="Визуальная концепция">
+  <div class="container">
+    <div class="generated-reference-head reveal">
+      <h2>Визуальная история <em>будущей съёмки.</em></h2>
+      <p>Все кадры в этом демонстрационном проекте сгенерированы специально под стиль сайта. Они показывают направление для реальной контент-съёмки: портрет, консультация, процедуры, кабинет, уход и предметные детали.</p>
+    </div>
+    <figure class="generated-reference-board reveal">
+      <img src="<?= esc(media_reference_board_url()) ?>" alt="Референсы будущей контент-съёмки косметолога" loading="lazy" decoding="async">
+      <figcaption class="generated-reference-badge">generated · shooting reference</figcaption>
+    </figure>
+  </div>
+</section>
+<?php
+}
+
 function render_footer(array $site): void
 {
+    if (basename((string)($_SERVER['SCRIPT_NAME'] ?? '')) === 'index.php') {
+        render_generated_reference_section();
+    }
     ?>
 <footer class="site-footer">
   <div class="container footer-top">
