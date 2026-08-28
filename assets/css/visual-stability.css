@@ -24,6 +24,17 @@ body::before{position:absolute!important}
 .hero-frame::after{display:none!important}
 .hero-actions .button::after,.magnetic::after{display:none!important}
 
+/* Above-the-fold content must never wait for IntersectionObserver. */
+.hero-copy.reveal,
+.hero-art.reveal,
+.page-hero-grid.reveal{
+  opacity:1!important;
+  transform:none!important;
+  filter:none!important;
+  clip-path:none!important;
+  transition:none!important;
+}
+
 .concern-section::before{
   left:70%!important;
   top:44%!important;
