@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-const CONTENT_STORAGE = __DIR__ . '/../storage';
+$storageOverride = trim((string)getenv('COSMETOLOGIST_STORAGE'));
+$siteRoot = dirname(__DIR__);
+$instance = preg_replace('/[^a-z0-9.-]+/i', '-', basename($siteRoot)) ?: 'cosmetologist';
+$defaultStorageRoot = dirname(__DIR__, 3) . '/cosmetologist-storage/' . $instance;
+define('CONTENT_STORAGE', $storageOverride !== '' ? $storageOverride : $defaultStorageRoot);
 
 function content_defaults(string $type): array
 {
@@ -89,7 +93,7 @@ function format_date_ru(string $date): string
 function safe_slug(string $value): string
 {
     $map = ['а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','е'=>'e','ё'=>'e','ж'=>'zh','з'=>'z','и'=>'i','й'=>'j','к'=>'k','л'=>'l','м'=>'m','н'=>'n','о'=>'o','п'=>'p','р'=>'r','с'=>'s','т'=>'t','у'=>'u','ф'=>'f','х'=>'h','ц'=>'c','ч'=>'ch','ш'=>'sh','щ'=>'shch','ъ'=>'','ы'=>'y','ь'=>'','э'=>'e','ю'=>'yu','я'=>'ya'];
-    $value = mb_strtolower(trim($value), 'UTF-8');
+    $value = function_exists('mb_strtolower') ? mb_strtolower(trim($value), 'UTF-8') : strtolower(trim($value));
     $value = strtr($value, $map);
     $value = preg_replace('/[^a-z0-9]+/i', '-', $value) ?? '';
     return trim($value, '-') ?: 'item-' . time();
@@ -112,7 +116,7 @@ function video_embed_url(string $url): ?string
 
     if (in_array($host, ['vk.com','www.vk.com','vkvideo.ru','www.vkvideo.ru'], true)) {
         if (str_contains($path, 'video_ext.php')) return $url;
-        if (preg_match('~/video(-?\d+)_(\d+)~', $path, $m)) {
+        if (preg_match('~video(-?\d+)_(\d+)~', $url, $m)) {
             return 'https://vk.com/video_ext.php?oid=' . rawurlencode($m[1]) . '&id=' . rawurlencode($m[2]) . '&hd=2';
         }
     }
