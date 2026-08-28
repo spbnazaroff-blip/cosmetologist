@@ -12,7 +12,7 @@ permissions:
 jobs:
   qa:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     env:
       BASE_URL: https://cosmetologist-dev.denisnazarov.online
     steps:
@@ -33,9 +33,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          routes=(/ /services.php /price.php /cases.php /blog.php /videos.php /admin/)
+          routes=(
+            /
+            /services.php
+            '/service.php?slug=diagnostika-kozhi'
+            /price.php
+            /cases.php
+            '/case.php?slug=vosstanovlenie-komforta'
+            /blog.php
+            '/article.php?slug=kak-ponyat-chto-narushen-barer-kozhi'
+            /videos.php
+            /admin/
+            /admin/seo.php
+            /admin/settings.php
+            /admin/media.php
+          )
           for route in "${routes[@]}"; do
-            out="/tmp/page-$(echo "$route" | tr '/.' '--').html"
+            out="/tmp/page-$(echo "$route" | tr '/.?=&' '------').html"
             code="$(curl -L -sS -o "$out" -w '%{http_code}' --max-time 20 "${BASE_URL}${route}")"
             echo "$route -> HTTP $code"
             test "$code" = "200"
@@ -44,11 +58,19 @@ jobs:
 
           curl -fsSL --max-time 20 "${BASE_URL}/assets/css/creative.css?v=1" -o /tmp/creative.css
           grep -q 'creative editorial motion layer' /tmp/creative.css
-          curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=5" -o /tmp/app.js
-          grep -q 'ba-enhanced' /tmp/app.js
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/css/mobile-stability.css?v=1" -o /tmp/mobile-stability.css
+          grep -q 'Mobile/touch stability layer' /tmp/mobile-stability.css
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=6" -o /tmp/app.js
+          grep -q 'explicit touch dragging' /tmp/app.js
           curl -fsSL --max-time 20 "${BASE_URL}/" -o /tmp/home.html
           grep -q 'creative.css?v=1' /tmp/home.html
-          grep -q 'app.js?v=5' /tmp/home.html
+          grep -q 'mobile-stability.css?v=1' /tmp/home.html
+          grep -q 'app.js?v=6' /tmp/home.html
+
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/generated/hq-treatment.php?v=1" -o /tmp/treatment.webp
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/generated/hq-specialist.php?v=1" -o /tmp/specialist.webp
+          test "$(wc -c </tmp/treatment.webp)" -gt 5000
+          test "$(wc -c </tmp/specialist.webp)" -gt 5000
 
       - name: Headless Chrome interaction smoke test
         shell: bash
@@ -81,7 +103,7 @@ jobs:
             --disable-dev-shm-usage \
             --window-size=390,844 \
             --virtual-time-budget=4500 \
-            --dump-dom "${BASE_URL}/?qa=mobile" \
+            --dump-dom "${BASE_URL}/cases.php?qa=mobile" \
             >/tmp/dom-mobile.html 2>/tmp/chrome-mobile.log
           grep -q 'ba-enhanced' /tmp/dom-mobile.html
           grep -q 'main-nav' /tmp/dom-mobile.html
@@ -89,4 +111,112 @@ jobs:
             cat /tmp/chrome-mobile.log
             exit 1
           fi
-          echo 'Live browser QA passed.'
+
+      - name: Real mobile touch drag test
+        shell: bash
+        run: |
+          set -euo pipefail
+          DRIVER="$(command -v chromedriver || true)"
+          if [ -z "$DRIVER" ]; then
+            for candidate in /usr/local/share/chromedriver-linux64/chromedriver /usr/bin/chromedriver; do
+              if [ -x "$candidate" ]; then DRIVER="$candidate"; break; fi
+            done
+          fi
+          test -n "$DRIVER"
+          echo "Using $DRIVER"
+          "$DRIVER" --port=9515 --allowed-ips=127.0.0.1 >/tmp/chromedriver.log 2>&1 &
+          DRIVER_PID=$!
+          trap 'kill $DRIVER_PID 2>/dev/null || true' EXIT
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:9515/status >/dev/null 2>&1 && break
+            sleep .2
+          done
+
+          python3 - <<'PY'
+          import json, os, time, urllib.request
+
+          BASE = 'http://127.0.0.1:9515'
+          SITE = os.environ['BASE_URL']
+
+          def req(method, path, data=None):
+              body = None if data is None else json.dumps(data).encode()
+              r = urllib.request.Request(BASE + path, data=body, method=method)
+              if body is not None:
+                  r.add_header('Content-Type', 'application/json')
+              with urllib.request.urlopen(r, timeout=20) as resp:
+                  return json.loads(resp.read().decode())
+
+          session = req('POST', '/session', {
+              'capabilities': {'alwaysMatch': {
+                  'browserName': 'chrome',
+                  'goog:chromeOptions': {'args': [
+                      '--headless=new', '--no-sandbox', '--disable-gpu',
+                      '--disable-dev-shm-usage', '--window-size=390,844'
+                  ]}
+              }}
+          })['value']['sessionId']
+          try:
+              req('POST', f'/session/{session}/url', {'url': SITE + '/cases.php?qa=touch'})
+              time.sleep(2.5)
+
+              def js(script, args=None):
+                  return req('POST', f'/session/{session}/execute/sync', {
+                      'script': script, 'args': args or []
+                  })['value']
+
+              state = js('''
+                const r=document.querySelector('.ba-range');
+                if(!r) return null;
+                r.scrollIntoView({block:'center'});
+                const b=r.closest('.before-after');
+                const rect=r.getBoundingClientRect();
+                return {x:rect.x,y:rect.y,w:rect.width,h:rect.height,split:b.style.getPropertyValue('--split')};
+              ''')
+              if not state or state['w'] < 200:
+                  raise SystemExit('Mobile slider not found or too small')
+              time.sleep(.3)
+              state = js('''
+                const r=document.querySelector('.ba-range');
+                const rect=r.getBoundingClientRect();
+                return {x:rect.x,y:rect.y,w:rect.width,h:rect.height};
+              ''')
+              x1 = round(state['x'] + state['w'] * .45)
+              x2 = round(state['x'] + state['w'] * .78)
+              y = round(state['y'] + state['h'] * .5)
+
+              req('POST', f'/session/{session}/actions', {'actions': [{
+                  'type':'pointer','id':'finger','parameters':{'pointerType':'touch'},
+                  'actions':[
+                      {'type':'pointerMove','duration':0,'origin':'viewport','x':x1,'y':y},
+                      {'type':'pointerDown','button':0},
+                      {'type':'pointerMove','duration':550,'origin':'viewport','x':x2,'y':y},
+                      {'type':'pointerUp','button':0}
+                  ]
+              }]})
+              time.sleep(.4)
+
+              result = js('''
+                const b=document.querySelector('.before-after.ba-enhanced');
+                const c=b?.querySelector(':scope > .ba-range');
+                const container=document.querySelector('.motion-section > .container');
+                return {
+                  split: parseFloat(c?.value || '0'),
+                  noOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+                  motionTransform: container ? getComputedStyle(container).transform : 'none',
+                  touchAction: c ? getComputedStyle(c).touchAction : ''
+                };
+              ''')
+              print('Touch QA:', result)
+              if result['split'] < 65:
+                  raise SystemExit(f"Touch drag did not move slider enough: {result['split']}")
+              if not result['noOverflow']:
+                  raise SystemExit('Horizontal overflow detected on mobile')
+              if result['motionTransform'] != 'none':
+                  raise SystemExit(f"Continuous section transform still active on mobile: {result['motionTransform']}")
+              if 'pan-y' not in result['touchAction']:
+                  raise SystemExit(f"Unexpected touch-action: {result['touchAction']}")
+          finally:
+              try: req('DELETE', f'/session/{session}')
+              except Exception: pass
+          PY
+          echo 'Live browser + real touch drag QA passed.'
