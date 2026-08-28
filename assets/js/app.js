@@ -5,8 +5,10 @@
   const nav = document.querySelector('.main-nav');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(pointer:fine)').matches;
+  const desktopMotion = !reduced && finePointer && window.matchMedia('(min-width:901px)').matches;
   const root = document.documentElement;
   document.body.classList.add('motion-ready');
+  document.body.classList.toggle('rich-motion', desktopMotion);
 
   const motionSections = Array.from(document.querySelectorAll('main > section'));
   motionSections.forEach(section => section.classList.add('motion-section'));
@@ -19,7 +21,7 @@
     if (progress) progress.style.width = `${p * 100}%`;
     root.style.setProperty('--scroll-p', p.toFixed(4));
 
-    if (!reduced) {
+    if (desktopMotion) {
       const vh = window.innerHeight || 1;
       motionSections.forEach(section => {
         const r = section.getBoundingClientRect();
@@ -117,7 +119,7 @@
     if (success) success.hidden = true;
   }));
 
-  /* Turn every existing before/after pair into an accessible drag/keyboard slider. */
+  /* Accessible before/after slider with explicit touch dragging and pointer capture. */
   document.querySelectorAll('.before-after').forEach(block => {
     const figures = block.querySelectorAll(':scope > figure');
     if (figures.length < 2 || block.classList.contains('ba-enhanced')) return;
@@ -128,6 +130,7 @@
     range.type = 'range';
     range.min = '5';
     range.max = '95';
+    range.step = '0.1';
     range.value = '50';
     range.className = 'ba-range';
     range.setAttribute('aria-label', 'Сравнить фото до и после');
@@ -136,13 +139,46 @@
     handle.className = 'ba-handle';
     handle.setAttribute('aria-hidden', 'true');
 
-    const setSplit = value => block.style.setProperty('--split', `${value}%`);
+    const setSplit = value => {
+      const numeric = Math.max(5, Math.min(95, Number(value) || 50));
+      range.value = String(numeric);
+      block.style.setProperty('--split', `${numeric}%`);
+    };
+    const splitFromClientX = clientX => {
+      const rect = block.getBoundingClientRect();
+      if (!rect.width) return;
+      setSplit(((clientX - rect.left) / rect.width) * 100);
+    };
+
     range.addEventListener('input', () => setSplit(range.value));
-    range.addEventListener('dblclick', () => { range.value = '50'; setSplit(50); });
+    range.addEventListener('dblclick', () => setSplit(50));
+
+    let activePointer = null;
+    range.addEventListener('pointerdown', event => {
+      activePointer = event.pointerId;
+      document.body.classList.add('slider-dragging');
+      if (typeof range.setPointerCapture === 'function') {
+        try { range.setPointerCapture(event.pointerId); } catch (_) {}
+      }
+      splitFromClientX(event.clientX);
+    });
+    range.addEventListener('pointermove', event => {
+      if (activePointer !== event.pointerId) return;
+      splitFromClientX(event.clientX);
+    });
+    const stopDrag = event => {
+      if (activePointer !== null && event.pointerId !== undefined && event.pointerId !== activePointer) return;
+      activePointer = null;
+      document.body.classList.remove('slider-dragging');
+    };
+    range.addEventListener('pointerup', stopDrag);
+    range.addEventListener('pointercancel', stopDrag);
+    range.addEventListener('lostpointercapture', stopDrag);
+
     block.append(range, handle);
   });
 
-  if (!reduced && finePointer) {
+  if (desktopMotion) {
     /* Soft cursor aura. It never replaces the system cursor and has no interaction role. */
     const aura = document.createElement('div');
     aura.className = 'cursor-aura';
@@ -168,7 +204,6 @@
     }, { passive: true });
     document.addEventListener('mouseleave', () => aura.classList.remove('is-active'));
 
-    /* Hero image moves in the opposite direction of the headline for real depth. */
     const hero = document.querySelector('.hero');
     const heroFrame = document.querySelector('.hero-frame');
     if (hero && heroFrame) {
@@ -185,7 +220,6 @@
       });
     }
 
-    /* The dark selector gets a slow light source that follows the pointer. */
     const concern = document.querySelector('.concern-section');
     if (concern) concern.addEventListener('pointermove', event => {
       const r = concern.getBoundingClientRect();
@@ -193,7 +227,6 @@
       concern.style.setProperty('--orb-y', `${((event.clientY-r.top)/r.height*100).toFixed(1)}%`);
     }, { passive:true });
 
-    /* Subtle 3D response on editorial cards. */
     document.querySelectorAll('.card,.case-card,.video-card').forEach(card => {
       card.addEventListener('pointermove', event => {
         const r = card.getBoundingClientRect();
@@ -204,7 +237,6 @@
       card.addEventListener('pointerleave', () => { card.style.transform = ''; });
     });
 
-    /* Magnetic movement is intentionally small so buttons remain predictable. */
     document.querySelectorAll('.button').forEach(button => {
       button.classList.add('magnetic');
       button.addEventListener('pointermove', event => {
