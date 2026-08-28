@@ -35,15 +35,15 @@ function media_demo_maps(): array
             'uvlazhnenie-glow' => $g['after'],
             'obnovlenie-kozhi' => $g['products'],
             'lifting-uhod' => $g['after_tone'],
-            'personalnyj-kurs' => $g['studio'],
+            'personalnyj-kurs' => $g['specialist'],
         ],
         'articles' => [
             'kak-ponyat-chto-narushen-barer-kozhi' => $g['products'],
-            'minimalnyj-domashnij-uhod' => $g['after'],
+            'minimalnyj-domashnij-uhod' => $g['products'],
             'zachem-konsultaciya-pered-proceduroj' => $g['specialist'],
         ],
         'videos' => [
-            'video-demo-1' => $g['studio'],
+            'video-demo-1' => $g['specialist'],
             'video-demo-2' => $g['treatment'],
         ],
     ];
