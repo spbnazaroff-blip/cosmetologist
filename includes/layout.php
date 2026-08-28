@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/site-settings.php';
+require_once __DIR__ . '/media.php';
+
 function esc(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -12,9 +15,16 @@ function page_title(array $site, string $title = ''): string
     return $title !== '' ? $title . ' — ' . $site['site_name'] : $site['seo']['title'];
 }
 
-function render_header(array $site, string $active = '', string $title = '', string $description = ''): void
+function render_header(array $site, string $active = '', string $title = '', string $description = '', array $seoOverride = []): void
 {
-    $desc = $description !== '' ? $description : $site['seo']['description'];
+    $key = $active !== '' ? $active : 'home';
+    $fallbackTitle = $title !== '' ? page_title($site, $title) : (string)$site['seo']['title'];
+    $fallbackDescription = $description !== '' ? $description : (string)$site['seo']['description'];
+    $seo = seo_page($key, [
+        'title'=>$fallbackTitle,
+        'description'=>$fallbackDescription,
+        'robots'=>(string)($site['seo']['robots'] ?? 'noindex,nofollow'),
+    ], $seoOverride);
     ?>
 <!doctype html>
 <html lang="ru">
@@ -22,13 +32,21 @@ function render_header(array $site, string $active = '', string $title = '', str
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12100f">
-<meta name="robots" content="<?= esc((string)$site['seo']['robots']) ?>">
-<meta name="description" content="<?= esc($desc) ?>">
-<title><?= esc(page_title($site, $title)) ?></title>
+<meta name="robots" content="<?= esc((string)$seo['robots']) ?>">
+<meta name="description" content="<?= esc((string)$seo['description']) ?>">
+<title><?= esc((string)$seo['title']) ?></title>
+<?php if(trim((string)$seo['canonical'])!==''): ?><link rel="canonical" href="<?= esc((string)$seo['canonical']) ?>"><?php endif; ?>
+<meta property="og:type" content="website">
+<meta property="og:title" content="<?= esc((string)$seo['og_title']) ?>">
+<meta property="og:description" content="<?= esc((string)$seo['og_description']) ?>">
+<?php if(trim((string)$seo['og_image'])!==''): ?><meta property="og:image" content="<?= esc((string)$seo['og_image']) ?>"><?php endif; ?>
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
+<link rel="stylesheet" href="/assets/css/premium.css?v=1">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
