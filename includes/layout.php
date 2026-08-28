@@ -74,13 +74,14 @@ function render_header(array $site, string $active = '', string $title = '', str
 <link rel="preload" as="image" href="/assets/generated/hq-treatment.php?v=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
 <link rel="stylesheet" href="/assets/css/premium.css?v=3">
 <link rel="stylesheet" href="/assets/css/generated-media.css?v=4">
 <link rel="stylesheet" href="/assets/css/creative.css?v=1">
 <link rel="stylesheet" href="/assets/css/mobile-stability.css?v=1">
 <link rel="stylesheet" href="/assets/css/visual-stability.css?v=1">
+<link rel="stylesheet" href="/assets/css/signature-typography.css?v=1">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>

@@ -1,0 +1,135 @@
+/* ÉLAN SKIN — signature typography system.
+   Strong editorial hierarchy without sacrificing readability. */
+:root{
+  --font-display:'Cormorant Garamond','Times New Roman',serif;
+  --font-ui:'Manrope',Arial,sans-serif;
+  --text-main:#171411;
+  --text-soft:#71675f;
+}
+
+html{font-size:16px}
+body{font-family:var(--font-ui);font-size:17px;line-height:1.65;letter-spacing:-.012em;color:var(--text-main)}
+
+/* Navigation and brand: no more tiny desktop chrome. */
+.main-nav a{font-family:var(--font-ui);font-size:15px!important;font-weight:600!important;line-height:1;letter-spacing:-.018em;color:rgba(255,255,255,.82)!important}
+.main-nav a:hover,.main-nav a.is-active{color:#fff!important}
+.brand-copy strong{font-size:15px!important;letter-spacing:.105em!important;font-weight:700!important}
+.brand-copy small{font-size:9px!important;letter-spacing:.17em!important}
+.header-cta{font-size:14px!important;font-weight:700!important;letter-spacing:-.01em!important}
+
+/* Display typography becomes the visual signature. */
+h1,h2,h3,.hero h1,.page-hero h1,.statement h2,.section-head h2,.card h3,.case-copy h3,.article-feature h3,.article-small h3,.video-copy h3,.price-row h3,.concern-result h3{
+  font-family:var(--font-display)!important;
+  font-weight:500!important;
+  text-rendering:optimizeLegibility;
+  font-optical-sizing:auto;
+}
+
+.hero h1{
+  font-size:clamp(76px,8.65vw,142px)!important;
+  line-height:.80!important;
+  letter-spacing:-.052em!important;
+  font-weight:500!important;
+  max-width:760px;
+}
+.hero h1 em{
+  font-family:var(--font-display)!important;
+  font-style:italic!important;
+  font-weight:400!important;
+  letter-spacing:-.045em!important;
+  color:#c7a084!important;
+}
+.hero-lead{font-size:18px!important;line-height:1.65!important;max-width:590px!important;color:rgba(255,255,255,.74)!important}
+
+.section-head h2,.statement h2{
+  font-size:clamp(62px,6.2vw,102px)!important;
+  line-height:.89!important;
+  letter-spacing:-.045em!important;
+  font-weight:500!important;
+}
+.section-head h2 em,.statement h2 em,.page-hero h1 em,#about h2 em{
+  font-family:var(--font-display)!important;
+  font-style:italic!important;
+  font-weight:400!important;
+  letter-spacing:-.04em!important;
+}
+.section-head>p,.lead,.statement .lead{font-size:18px!important;line-height:1.68!important;letter-spacing:-.018em!important;color:#76695f}
+
+.page-hero h1{
+  font-size:clamp(72px,7.2vw,116px)!important;
+  line-height:.84!important;
+  letter-spacing:-.05em!important;
+  font-weight:500!important;
+}
+.page-hero .lead{font-size:19px!important;line-height:1.6!important;max-width:600px}
+.breadcrumbs{font-size:12px!important;letter-spacing:.08em!important;text-transform:uppercase}
+
+.kicker,.eyebrow,.article-meta,.case-period,.card-meta,.trust-item strong{
+  font-family:var(--font-ui)!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  letter-spacing:.13em!important;
+  text-transform:uppercase;
+}
+
+.card h3{font-size:clamp(31px,2.45vw,42px)!important;line-height:1.02!important;letter-spacing:-.035em!important}
+.card-body p{font-size:15.5px!important;line-height:1.62!important;color:#756b64}
+.card-foot,.text-link{font-size:14px!important;font-weight:700!important;letter-spacing:-.015em!important}
+
+.case-copy h3{font-size:clamp(34px,3.2vw,52px)!important;line-height:1.02!important;letter-spacing:-.04em!important}
+.case-copy p{font-size:16px!important;line-height:1.62!important;color:#756b64}
+
+.article-feature h3{font-size:clamp(52px,5.2vw,82px)!important;line-height:.94!important;letter-spacing:-.045em!important;font-weight:500!important}
+.article-feature p{font-size:17px!important;line-height:1.62!important}
+.article-small h3{font-size:clamp(28px,2.5vw,39px)!important;line-height:1.04!important;letter-spacing:-.035em!important}
+.article-small p{font-size:15px!important;line-height:1.58!important}
+
+.video-copy h3{font-size:clamp(30px,2.7vw,42px)!important;line-height:1.03!important;letter-spacing:-.035em!important}
+.video-copy p{font-size:15.5px!important;line-height:1.6!important}
+
+.concern-copy h2{font-family:var(--font-display)!important;font-size:clamp(64px,6vw,100px)!important;line-height:.88!important;letter-spacing:-.045em!important;font-weight:500!important}
+.concern-tab{font-size:16px!important;font-weight:600!important;letter-spacing:-.018em!important}
+.concern-result h3{font-size:clamp(40px,3.6vw,58px)!important;line-height:.98!important;letter-spacing:-.04em!important}
+.concern-result p{font-size:16px!important;line-height:1.64!important}
+
+#about h2{font-family:var(--font-display)!important;font-size:clamp(64px,6vw,102px)!important;line-height:.88!important;letter-spacing:-.047em!important;font-weight:500!important}
+#about .lead{font-size:18px!important;line-height:1.68!important;color:rgba(255,255,255,.68)!important}
+
+.price-row h3{font-size:30px!important;line-height:1.05!important;letter-spacing:-.033em!important}
+.price-row p{font-size:15px!important;line-height:1.55!important}
+.price-row>span{font-size:13px!important;font-weight:600!important}
+.price-row>strong{font-size:17px!important;font-weight:700!important}
+
+.button{font-family:var(--font-ui)!important;font-size:14px!important;font-weight:700!important;letter-spacing:-.012em!important}
+.disclaimer{font-size:12.5px!important;line-height:1.55!important;color:#867a72!important}
+.footer-top p,.footer-nav a,.footer-contacts a,.footer-contacts span{font-size:14px!important;line-height:1.6!important}
+.footer-bottom{font-size:11px!important;line-height:1.5!important}
+
+@media(max-width:1100px){
+  .main-nav a{font-size:14px!important}
+  .hero h1{font-size:clamp(68px,8.2vw,108px)!important}
+}
+
+@media(max-width:900px){
+  body{font-size:16px;line-height:1.62}
+  .main-nav a{font-size:20px!important;font-weight:600!important;line-height:1.15!important}
+  .hero h1{font-size:clamp(58px,15.7vw,82px)!important;line-height:.83!important;letter-spacing:-.045em!important}
+  .hero-lead{font-size:17px!important;line-height:1.6!important}
+  .section-head h2,.statement h2,.concern-copy h2,#about h2{font-size:clamp(52px,13.4vw,72px)!important;line-height:.91!important}
+  .page-hero h1{font-size:clamp(56px,14.8vw,78px)!important;line-height:.88!important}
+  .page-hero .lead,.section-head>p,.lead,.statement .lead,#about .lead{font-size:17px!important}
+  .card h3{font-size:34px!important}
+  .case-copy h3{font-size:38px!important}
+  .article-feature h3{font-size:50px!important}
+  .article-small h3{font-size:31px!important}
+  .concern-result h3{font-size:42px!important}
+  .price-row h3{font-size:28px!important}
+}
+
+@media(max-width:520px){
+  .hero h1{font-size:clamp(55px,16.3vw,70px)!important}
+  .section-head h2,.statement h2,.concern-copy h2,#about h2{font-size:clamp(48px,14vw,62px)!important}
+  .page-hero h1{font-size:clamp(50px,14.7vw,66px)!important}
+  .kicker,.eyebrow,.article-meta,.case-period,.card-meta{font-size:10.5px!important;letter-spacing:.12em!important}
+  .button{font-size:13px!important}
+}
