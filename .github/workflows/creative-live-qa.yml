@@ -30,6 +30,8 @@ jobs:
           cat /tmp/php-lint.log
           ! grep -Eq 'cursor-aura|perspective\(900|magnetic|--orb-x|--hero-x' assets/js/app.js
           grep -q 'Final visual stability pass' assets/css/visual-stability.css
+          grep -q 'hero-copy::before{display:none!important}' assets/css/visual-stability.css
+          ! grep -q 'specialist-studio.php' assets/css/generated-media.css
 
       - name: Live routes assets and generated images
         shell: bash
@@ -64,6 +66,7 @@ jobs:
           grep -q 'creative editorial motion layer' /tmp/creative.css
           grep -q 'Mobile/touch stability layer' /tmp/mobile-stability.css
           grep -q 'Final visual stability pass' /tmp/visual-stability.css
+          grep -q 'hero-copy::before{display:none!important}' /tmp/visual-stability.css
 
           curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=7" -o /tmp/app.js
           grep -q 'Stable accessible before/after slider' /tmp/app.js
@@ -217,6 +220,6 @@ jobs:
       - name: Upload visual QA screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: visual-qa-stable
+          name: visual-qa-stable-${{ github.run_attempt }}
           path: /tmp/visual-qa/*.png
           retention-days: 2
