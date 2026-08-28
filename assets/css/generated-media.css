@@ -1,21 +1,29 @@
-/* Generated demo imagery: local reference assets, no external stock dependency. */
+/* Generated demo imagery: local references. Keep assets crisp at desktop sizes. */
 .hero-frame{
-  position:relative;
+  position:absolute;
+  inset:0 0 50px 54px;
   overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:34px;
   background:
-    linear-gradient(180deg,rgba(20,16,14,.04),rgba(20,16,14,.28)),
-    url('/assets/generated/specialist-studio.php') center 22%/cover no-repeat;
+    linear-gradient(180deg,rgba(20,16,14,.02),rgba(20,16,14,.20)),
+    url('/assets/generated/treatment.php') center 42%/cover no-repeat;
   box-shadow:0 32px 90px rgba(23,17,14,.24);
 }
-.hero-frame .hero-art,.hero-frame .hero-orbit{display:none!important}
-.hero-frame .hero-seal{z-index:3;backdrop-filter:blur(10px);background:rgba(246,239,231,.75)}
+.hero-frame .art-face,.hero-frame .art-neck,.hero-frame .art-orbit{display:none!important}
 
-.generated-reference-section{padding:92px 0 110px;background:#e9e1d7;border-top:1px solid rgba(53,43,37,.12)}
-.generated-reference-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.58fr);gap:48px;align-items:end;margin-bottom:38px}
-.generated-reference-head h2{margin:0;max-width:820px;font-family:'Prata',serif;font-size:clamp(38px,4.6vw,72px);font-weight:400;line-height:.98;letter-spacing:-.035em}
-.generated-reference-head p{margin:0;color:#74675f;font-size:17px;line-height:1.65}
-.generated-reference-board{position:relative;max-width:920px;margin:0 auto;border-radius:30px;overflow:hidden;background:#d9cec1;box-shadow:0 28px 80px rgba(33,25,21,.16)}
-.generated-reference-board img{display:block;width:100%;height:auto;aspect-ratio:22/21;object-fit:cover;filter:saturate(.9) contrast(.98)}
-.generated-reference-badge{position:absolute;left:22px;bottom:22px;padding:11px 15px;border-radius:999px;background:rgba(18,16,15,.76);color:#fff;font-size:12px;letter-spacing:.09em;text-transform:uppercase;backdrop-filter:blur(12px)}
+/* The old single compressed moodboard was intentionally removed from public view:
+   it was useful as an internal storyboard, but a single raster contact sheet looked soft
+   when enlarged in the browser. Individual generated references remain in content cards. */
+.generated-reference-section{display:none!important}
 
-@media(max-width:900px){.generated-reference-section{padding:70px 0 84px}.generated-reference-head{grid-template-columns:1fr;gap:18px}.generated-reference-head p{font-size:16px}.generated-reference-board{border-radius:22px}}
+.service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img{
+  image-rendering:auto;
+  filter:none;
+  transform:translateZ(0);
+}
+.service-tile-image img,.video-poster img{width:100%;height:100%;object-fit:cover}
+
+@media(max-width:900px){
+  .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 42%}
+}
