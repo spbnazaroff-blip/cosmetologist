@@ -8,3 +8,5 @@ Thumbs.db
 *.log
 /vendor/
 /node_modules/
+/assets/uploads/*
+!/assets/uploads/.htaccess

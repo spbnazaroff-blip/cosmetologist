@@ -15,6 +15,35 @@ function page_title(array $site, string $title = ''): string
     return $title !== '' ? $title . ' — ' . $site['site_name'] : $site['seo']['title'];
 }
 
+function site_booking_href(array $site): string
+{
+    $value = trim((string)($site['booking_url'] ?? ''));
+    return $value !== '' ? $value : '/#booking';
+}
+
+function site_phone_href(string $phone): string
+{
+    $digits = preg_replace('/\D+/', '', $phone) ?? '';
+    return $digits !== '' ? 'tel:+' . $digits : '';
+}
+
+function site_telegram_href(string $value): string
+{
+    $value = trim($value);
+    if ($value === '') return '';
+    if (preg_match('~^https?://~i', $value)) return $value;
+    return 'https://t.me/' . ltrim($value, '@');
+}
+
+function site_whatsapp_href(string $value): string
+{
+    $value = trim($value);
+    if ($value === '') return '';
+    if (preg_match('~^https?://~i', $value)) return $value;
+    $digits = preg_replace('/\D+/', '', $value) ?? '';
+    return $digits !== '' ? 'https://wa.me/' . $digits : '';
+}
+
 function render_header(array $site, string $active = '', string $title = '', string $description = '', array $seoOverride = []): void
 {
     $key = $active !== '' ? $active : 'home';
@@ -25,6 +54,7 @@ function render_header(array $site, string $active = '', string $title = '', str
         'description'=>$fallbackDescription,
         'robots'=>(string)($site['seo']['robots'] ?? 'noindex,nofollow'),
     ], $seoOverride);
+    $bookingHref = site_booking_href($site);
     ?>
 <!doctype html>
 <html lang="ru">
@@ -46,7 +76,7 @@ function render_header(array $site, string $active = '', string $title = '', str
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
-<link rel="stylesheet" href="/assets/css/premium.css?v=2">
+<link rel="stylesheet" href="/assets/css/premium.css?v=3">
 <link rel="stylesheet" href="/assets/css/generated-media.css?v=4">
 </head>
 <body>
@@ -67,7 +97,7 @@ function render_header(array $site, string $active = '', string $title = '', str
       <a href="/#about">Специалист</a>
       <a href="/#booking">Контакты</a>
     </nav>
-    <a class="button button-outline header-cta" href="/#booking">Записаться</a>
+    <a class="button button-outline header-cta" href="<?= esc($bookingHref) ?>">Записаться</a>
   </div>
 </header>
 <?php
@@ -111,16 +141,21 @@ function render_footer(array $site): void
     if (basename((string)($_SERVER['SCRIPT_NAME'] ?? '')) === 'index.php') {
         render_generated_reference_section();
     }
+    $bookingHref = site_booking_href($site);
+    $phone = trim((string)($site['phone'] ?? ''));
+    $telegram = trim((string)($site['telegram'] ?? ''));
+    $whatsapp = trim((string)($site['whatsapp'] ?? ''));
+    $address = trim((string)($site['address'] ?? ''));
     ?>
 <footer class="site-footer">
   <div class="container footer-top">
     <a class="brand" href="/"><span class="brand-mark">É</span><span class="brand-copy"><strong><?= esc((string)$site['site_name']) ?></strong><small>skin atelier</small></span></a>
-    <p>Демонстрационный проект премиального сайта косметолога. Контент, цены, фотографии и контакты перед запуском заменяются на реальные данные специалиста.</p>
-    <nav class="footer-nav"><a href="/services.php">Услуги</a><a href="/price.php">Цены</a><a href="/cases.php">Результаты</a><a href="/blog.php">Блог</a><a href="/videos.php">Видео</a><a href="/#about">Специалист</a><a href="/#booking">Контакты</a></nav>
+    <div><p>Премиальный сайт специалиста эстетической косметологии: услуги, кейсы, экспертные материалы и понятный путь к записи.</p><?php if($phone!==''||$telegram!==''||$whatsapp!==''||$address!==''): ?><div class="footer-contacts"><?php if($phone!=='' && site_phone_href($phone)!==''): ?><a href="<?=esc(site_phone_href($phone))?>"><?=esc($phone)?></a><?php endif;?><?php if($telegram!=='' && site_telegram_href($telegram)!==''): ?><a href="<?=esc(site_telegram_href($telegram))?>" target="_blank" rel="noopener">Telegram</a><?php endif;?><?php if($whatsapp!=='' && site_whatsapp_href($whatsapp)!==''): ?><a href="<?=esc(site_whatsapp_href($whatsapp))?>" target="_blank" rel="noopener">WhatsApp</a><?php endif;?><?php if($address!==''): ?><span><?=esc($address)?></span><?php endif;?></div><?php endif;?></div>
+    <nav class="footer-nav"><a href="/services.php">Услуги</a><a href="/price.php">Цены</a><a href="/cases.php">Результаты</a><a href="/blog.php">Блог</a><a href="/videos.php">Видео</a><a href="/#about">Специалист</a><a href="<?=esc($bookingHref)?>">Запись</a></nav>
   </div>
   <div class="container footer-bottom"><span>© <?= date('Y') ?> <?= esc((string)$site['site_name']) ?></span><span>Информация на сайте не является медицинской рекомендацией и не заменяет консультацию специалиста.</span><a class="admin-link" href="/admin/">Управление сайтом</a></div>
 </footer>
-<div class="mobile-booking"><a class="button button-dark button-full" href="/#booking">Записаться <span>↗</span></a></div>
+<div class="mobile-booking"><a class="button button-dark button-full" href="<?=esc($bookingHref)?>">Записаться <span>↗</span></a></div>
 <script src="/assets/js/app.js?v=4" defer></script>
 </body></html>
 <?php

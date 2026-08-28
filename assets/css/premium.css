@@ -1,5 +1,6 @@
 /* Premium visual layer: typography, spacing and editorial media only. No external stock imagery. */
 @media (min-width: 900px){
+  .main-nav{gap:clamp(12px,1.35vw,22px)}
   .main-nav a{font-size:15px;letter-spacing:.005em}
   .header-cta{font-size:14px;min-height:50px;padding-inline:24px}
   .brand-copy strong{font-size:15px}.brand-copy small{font-size:8px}
@@ -50,9 +51,12 @@
 .media-cover:after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);border-radius:inherit;pointer-events:none}
 .detail-cover{margin-bottom:42px}.detail-cover img{min-height:480px}
 
-/* Keep the expert block clean: the only portrait layer is supplied by generated-media.css. */
 #about .statement-grid:before{display:none!important;content:none!important}
 #about .statement-grid>.kicker{position:static;opacity:1;pointer-events:auto}
+
+.footer-contacts{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.footer-contacts a,.footer-contacts span{font-size:12px;color:rgba(255,255,255,.7)}
+.footer-contacts a{border-bottom:1px solid rgba(255,255,255,.22);padding-bottom:2px}
 
 @media(max-width:899px){
   .card{min-height:440px}.card h3{font-size:25px}
@@ -61,4 +65,5 @@
 @media(max-width:620px){
   .before-after{grid-template-columns:1fr;min-height:0}.before-after figure{height:390px}.before-after:after{display:none}
   .service-tile-image,.article-tile-image{aspect-ratio:4/3}
+  .footer-contacts{display:grid;gap:9px}
 }
