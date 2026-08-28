@@ -41,12 +41,13 @@ function render_header(array $site, string $active = '', string $title = '', str
 <meta property="og:description" content="<?= esc((string)$seo['og_description']) ?>">
 <?php if(trim((string)$seo['og_image'])!==''): ?><meta property="og:image" content="<?= esc((string)$seo['og_image']) ?>"><?php endif; ?>
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="/assets/generated/hq-treatment.php?v=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css?v=4">
-<link rel="stylesheet" href="/assets/css/premium.css?v=1">
-<link rel="stylesheet" href="/assets/css/generated-media.css?v=3">
+<link rel="stylesheet" href="/assets/css/premium.css?v=2">
+<link rel="stylesheet" href="/assets/css/generated-media.css?v=4">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -64,6 +65,7 @@ function render_header(array $site, string $active = '', string $title = '', str
       <a class="<?= $active === 'blog' ? 'is-active' : '' ?>" href="/blog.php">Блог</a>
       <a class="<?= $active === 'videos' ? 'is-active' : '' ?>" href="/videos.php">Видео</a>
       <a href="/#about">Специалист</a>
+      <a href="/#booking">Контакты</a>
     </nav>
     <a class="button button-outline header-cta" href="/#booking">Записаться</a>
   </div>
@@ -114,7 +116,7 @@ function render_footer(array $site): void
   <div class="container footer-top">
     <a class="brand" href="/"><span class="brand-mark">É</span><span class="brand-copy"><strong><?= esc((string)$site['site_name']) ?></strong><small>skin atelier</small></span></a>
     <p>Демонстрационный проект премиального сайта косметолога. Контент, цены, фотографии и контакты перед запуском заменяются на реальные данные специалиста.</p>
-    <nav class="footer-nav"><a href="/services.php">Услуги</a><a href="/price.php">Цены</a><a href="/cases.php">Результаты</a><a href="/blog.php">Блог</a><a href="/videos.php">Видео</a><a href="/#booking">Запись</a></nav>
+    <nav class="footer-nav"><a href="/services.php">Услуги</a><a href="/price.php">Цены</a><a href="/cases.php">Результаты</a><a href="/blog.php">Блог</a><a href="/videos.php">Видео</a><a href="/#about">Специалист</a><a href="/#booking">Контакты</a></nav>
   </div>
   <div class="container footer-bottom"><span>© <?= date('Y') ?> <?= esc((string)$site['site_name']) ?></span><span>Информация на сайте не является медицинской рекомендацией и не заменяет консультацию специалиста.</span><a class="admin-link" href="/admin/">Управление сайтом</a></div>
 </footer>

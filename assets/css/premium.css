@@ -1,99 +1,64 @@
-/* Premium visual layer: larger desktop typography, editorial imagery and richer cards. */
+/* Premium visual layer: typography, spacing and editorial media only. No external stock imagery. */
 @media (min-width: 900px){
-  .main-nav a{font-size:14px;letter-spacing:.01em}
-  .header-cta{font-size:13px;min-height:48px;padding-inline:23px}
-  .brand-copy strong{font-size:14px}.brand-copy small{font-size:8px}
-  .hero-lead,.lead{font-size:17px;line-height:1.75}
-  .section-head>p{font-size:15px;line-height:1.75}
-  .card p,.case-copy p,.article-feature p{font-size:14px;line-height:1.7}
-  .article-small p{font-size:13px;line-height:1.65}
+  .main-nav a{font-size:15px;letter-spacing:.005em}
+  .header-cta{font-size:14px;min-height:50px;padding-inline:24px}
+  .brand-copy strong{font-size:15px}.brand-copy small{font-size:8px}
+  .hero-lead,.lead{font-size:17px;line-height:1.72}
+  .section-head>p{font-size:16px;line-height:1.7}
+  .card p,.case-copy p,.article-feature p{font-size:15px;line-height:1.65}
+  .article-small p{font-size:14px;line-height:1.6}
   .card-meta,.article-meta,.case-period,.kicker,.eyebrow{font-size:10px}
-  .card-foot,.text-link{font-size:12px}
-  .breadcrumbs{font-size:11px}
-  .page-hero-grid .lead{font-size:16px;max-width:540px}
+  .card-foot,.text-link{font-size:13px}
+  .breadcrumbs{font-size:12px}
+  .page-hero-grid .lead{font-size:17px;max-width:560px}
 }
 
-/* Homepage hero: replace abstract demo face with a real premium beauty image. */
-.hero-frame{
-  background:
-    linear-gradient(180deg,rgba(16,13,11,.05),rgba(16,13,11,.35)),
-    url('https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1500&q=88') center 18%/cover no-repeat;
-}
 .hero-frame:before{border-color:rgba(255,255,255,.42)}
 .art-face,.art-neck{display:none}.art-orbit{opacity:.58}
-.floating-card{backdrop-filter:blur(16px);background:rgba(251,248,244,.9)}
+.floating-card{backdrop-filter:blur(16px);background:rgba(251,248,244,.92)}
 
-/* Stronger page heroes. */
 .page-hero{position:relative;overflow:hidden}
 .page-hero:after{content:'';position:absolute;right:-7vw;top:20%;width:34vw;aspect-ratio:1;border:1px solid rgba(210,179,147,.16);border-radius:50%;pointer-events:none}
 .page-hero-grid{position:relative;z-index:2}
 
-/* Service cards become visual editorial tiles. */
-.card-icon{width:100%;aspect-ratio:16/10;height:auto;margin:26px 0 24px;border:0;border-radius:18px;background-size:cover;background-position:center;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
-.card-icon:after{display:none}
-.cards .card:nth-child(1) .card-icon{background-image:linear-gradient(180deg,transparent,rgba(15,12,10,.12)),url('https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1100&q=86')}
-.cards .card:nth-child(2) .card-icon{background-image:linear-gradient(180deg,transparent,rgba(15,12,10,.12)),url('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1100&q=86')}
-.cards .card:nth-child(3) .card-icon{background-image:linear-gradient(180deg,transparent,rgba(15,12,10,.12)),url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1100&q=86')}
-.cards .card:nth-child(4) .card-icon{background-image:url('https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=1100&q=86')}
-.cards .card:nth-child(5) .card-icon{background-image:url('https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=1100&q=86')}
-.cards .card:nth-child(6) .card-icon{background-image:url('https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1100&q=86')}
-.card{min-height:500px;padding:25px}.card h3{font-size:27px}
+.card{min-height:500px;padding:25px}
+.card h3{font-size:28px}
+.service-tile-image,.article-tile-image{aspect-ratio:16/10;border-radius:20px;overflow:hidden;margin:18px 0 24px;background:#ddd0c4}
+.service-tile-image img,.article-tile-image img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.card:hover .service-tile-image img,.article-tile:hover .article-tile-image img{transform:scale(1.035)}
 
-/* Before / after presentation. */
-.case-visual{display:grid;grid-template-columns:1fr 1fr;background:#c9b4a4;isolation:isolate}
-.case-visual:before,.case-visual:after{position:relative!important;inset:auto!important;width:auto!important;display:block;background-size:cover!important;background-position:center!important;z-index:-1}
-.case-card:nth-child(1) .case-visual:before{background-image:url('https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&q=84')}
-.case-card:nth-child(1) .case-visual:after{background-image:url('https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=800&q=84')}
-.case-card:nth-child(2) .case-visual:before{background-image:url('https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=800&q=84')}
-.case-card:nth-child(2) .case-visual:after{background-image:url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=84')}
-.case-card:nth-child(3) .case-visual:before{background-image:url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=84')}
-.case-card:nth-child(3) .case-visual:after{background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=84')}
-.case-copy h3{font-size:27px}
+.case-copy h3{font-size:28px}
+.before-after{display:grid;grid-template-columns:1fr 1fr;min-height:520px;border-radius:30px;overflow:hidden;position:relative;background:#cdb9aa}
+.before-after figure{margin:0;position:relative;min-width:0}
+.before-after img{width:100%;height:100%;object-fit:cover}
+.before-after figcaption{position:absolute;left:18px;top:18px;padding:8px 12px;border-radius:999px;background:rgba(16,13,11,.72);color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.14em}
+.before-after:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.75)}
 
-/* Home journal gets real editorial photography. */
-.article-feature{background:
-  linear-gradient(180deg,rgba(15,12,10,.18),rgba(15,12,10,.78)),
-  url('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=1500&q=87') center/cover no-repeat;
-}
 .article-feature:after{border-color:rgba(255,255,255,.35)}
-.article-small{position:relative;overflow:hidden;padding-top:155px}
-.article-small:before{content:'';position:absolute;left:0;right:0;top:0;height:132px;background-size:cover;background-position:center}
-.article-list .article-small:nth-child(1):before{background-image:url('https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=1000&q=85')}
-.article-list .article-small:nth-child(2):before{background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1000&q=85')}
+.article-index{gap:18px}.article-tile{overflow:hidden}.article-tile h2{font-size:clamp(31px,3vw,46px)}
+.article-small{min-height:150px}
 
-/* Specialist section gets a photographic portrait layer. */
-#about .statement-grid{grid-template-columns:.55fr 1fr;align-items:center}
-#about .statement-grid:before{content:'';display:block;min-height:560px;border-radius:34px;background:linear-gradient(180deg,transparent,rgba(19,15,13,.12)),url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=86') center/cover no-repeat;box-shadow:var(--shadow)}
-#about .statement-grid>.kicker{position:absolute;opacity:0;pointer-events:none}
-
-/* Video cards remain useful even before real VK/RuTube links are added. */
 .video-frame{background-position:center;background-size:cover}
-.video-card:nth-child(1) .video-frame{background-image:linear-gradient(180deg,rgba(10,8,7,.05),rgba(10,8,7,.3)),url('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1400&q=86')}
-.video-card:nth-child(2) .video-frame{background-image:linear-gradient(180deg,rgba(10,8,7,.05),rgba(10,8,7,.3)),url('https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=1400&q=86')}
-.video-placeholder{backdrop-filter:blur(8px);background:rgba(255,255,255,.85);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.video-placeholder{backdrop-filter:blur(8px);background:rgba(255,255,255,.88);box-shadow:0 12px 40px rgba(0,0,0,.18)}
+.video-poster{position:absolute;inset:0}
+.video-poster img{width:100%;height:100%;object-fit:cover}
+.video-poster:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,12,10,.04),rgba(15,12,10,.30))}
+.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:72px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:#171411;font-size:22px;box-shadow:0 16px 45px rgba(0,0,0,.2)}
 
-/* Image components used by inner pages. */
 .media-cover{position:relative;overflow:hidden;border-radius:30px;min-height:360px;background:#d7c8bc}
 .media-cover img{width:100%;height:100%;min-height:360px;object-fit:cover;position:absolute;inset:0}
 .media-cover:after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);border-radius:inherit;pointer-events:none}
-.service-tile-image,.article-tile-image{aspect-ratio:16/10;border-radius:20px;overflow:hidden;margin-bottom:24px;background:#ddd0c4}
-.service-tile-image img,.article-tile-image img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
-.card:hover .service-tile-image img,.article-tile:hover .article-tile-image img{transform:scale(1.035)}
-.article-index{gap:18px}.article-tile{overflow:hidden}.article-tile h2{font-size:clamp(31px,3vw,46px)}
 .detail-cover{margin-bottom:42px}.detail-cover img{min-height:480px}
-.before-after{display:grid;grid-template-columns:1fr 1fr;min-height:520px;border-radius:30px;overflow:hidden;position:relative;background:#cdb9aa}
-.before-after figure{margin:0;position:relative;min-width:0}.before-after img{width:100%;height:100%;object-fit:cover}.before-after figcaption{position:absolute;left:18px;top:18px;padding:8px 12px;border-radius:999px;background:rgba(16,13,11,.72);color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.14em}.before-after:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.75)}
 
-/* Rich video poster when there is no embed URL. */
-.video-poster{position:absolute;inset:0}.video-poster img{width:100%;height:100%;object-fit:cover}.video-poster:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,12,10,.05),rgba(15,12,10,.32))}
-.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:72px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.9);color:#171411;font-size:22px;box-shadow:0 16px 45px rgba(0,0,0,.2)}
+/* Keep the expert block clean: the only portrait layer is supplied by generated-media.css. */
+#about .statement-grid:before{display:none!important;content:none!important}
+#about .statement-grid>.kicker{position:static;opacity:1;pointer-events:auto}
 
 @media(max-width:899px){
-  .card{min-height:430px}.card-icon{margin:22px 0 20px}.card h3{font-size:24px}
-  #about .statement-grid{display:block}#about .statement-grid:before{min-height:430px;margin-bottom:32px}#about .statement-grid>.kicker{display:none}
+  .card{min-height:440px}.card h3{font-size:25px}
   .before-after{min-height:420px}.detail-cover img,.media-cover img{min-height:340px}.media-cover{min-height:340px}
 }
 @media(max-width:620px){
   .before-after{grid-template-columns:1fr;min-height:0}.before-after figure{height:390px}.before-after:after{display:none}
-  .article-small{padding-top:145px}.service-tile-image,.article-tile-image{aspect-ratio:4/3}
+  .service-tile-image,.article-tile-image{aspect-ratio:4/3}
 }

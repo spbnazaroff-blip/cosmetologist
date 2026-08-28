@@ -14,19 +14,14 @@ function media_safe_url(string $value): string
 function media_generated_assets(): array
 {
     return [
-        // Full generated WebP files are reconstructed from validated local chunks.
-        // This avoids the previously truncated binary files that rendered as empty beige cards.
         'specialist' => '/assets/generated/hq-specialist.php?v=1',
+        'studio' => '/assets/generated/specialist-studio.php?v=2',
         'treatment' => '/assets/generated/hq-treatment.php?v=1',
-        // Until the rest of the generated pack is uploaded in full, reuse the two verified
-        // references rather than serving corrupted placeholders.
-        'products' => '/assets/generated/hq-specialist.php?v=1',
-        'video' => '/assets/generated/hq-treatment.php?v=1',
-        // Portrait references are kept only for clearly labelled demo cases.
-        'before' => '/assets/generated/ref-case-before.php',
-        'after' => '/assets/generated/ref-case-after-glow.php',
-        'after_tone' => '/assets/generated/ref-case-after-tone.php',
-        'references' => '/assets/generated/ref-all-generated.php',
+        'products' => '/assets/generated/products.php?v=2',
+        'before' => '/assets/generated/ref-case-before.php?v=2',
+        'after' => '/assets/generated/ref-case-after-glow.php?v=2',
+        'after_tone' => '/assets/generated/ref-case-after-tone.php?v=2',
+        'references' => '/assets/generated/ref-all-generated.php?v=2',
     ];
 }
 
@@ -37,18 +32,18 @@ function media_demo_maps(): array
         'services' => [
             'diagnostika-kozhi' => $g['specialist'],
             'glubokoe-ochishchenie' => $g['treatment'],
-            'uvlazhnenie-glow' => $g['treatment'],
+            'uvlazhnenie-glow' => $g['after'],
             'obnovlenie-kozhi' => $g['products'],
-            'lifting-uhod' => $g['treatment'],
-            'personalnyj-kurs' => $g['specialist'],
+            'lifting-uhod' => $g['after_tone'],
+            'personalnyj-kurs' => $g['studio'],
         ],
         'articles' => [
             'kak-ponyat-chto-narushen-barer-kozhi' => $g['products'],
-            'minimalnyj-domashnij-uhod' => $g['products'],
+            'minimalnyj-domashnij-uhod' => $g['after'],
             'zachem-konsultaciya-pered-proceduroj' => $g['specialist'],
         ],
         'videos' => [
-            'video-demo-1' => $g['specialist'],
+            'video-demo-1' => $g['studio'],
             'video-demo-2' => $g['treatment'],
         ],
     ];
