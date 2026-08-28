@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-return [
-    // Демонстрационные данные. Перед передачей проекта клиенту заменить на реальные.
+require_once __DIR__ . '/includes/profile.php';
+
+$defaults = [
+    // Демонстрационные данные. Их можно заменить через /admin/settings.php без правки кода.
     'site_name' => 'ÉLAN SKIN',
     'eyebrow' => 'Эстетическая косметология · premium care',
     'headline' => 'Точная косметология. Тихая роскошь вашей кожи.',
@@ -21,3 +23,5 @@ return [
         'robots' => 'noindex,nofollow',
     ],
 ];
+
+return site_profile_load($defaults);
