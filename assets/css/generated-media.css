@@ -15,42 +15,57 @@
 /* The old compressed contact sheet remains internal only. */
 .generated-reference-section{display:none!important}
 
-.service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img,.article-small-thumb img{
+.service-tile-image img,.video-poster img,.article-card-image img,.article-hero-image img,.service-hero-image img,.expert-photo img,.before-after img{
   image-rendering:auto;
   filter:none;
   transform:translateZ(0);
 }
 .service-tile-image img,.video-poster img{width:100%;height:100%;object-fit:cover}
 
-/* Specialist section: the expert must be visually present, not only described in text. */
-.expert-feature{
-  display:grid;
-  grid-template-columns:minmax(320px,.88fr) minmax(0,1.12fr);
-  gap:clamp(38px,6vw,86px);
-  align-items:center;
-}
-.expert-photo{
-  min-height:540px;
-  overflow:hidden;
+/* Specialist section: generated portrait/reference becomes part of the composition. */
+#about{position:relative;overflow:hidden}
+#about::before{
+  content:"";
+  position:absolute;
+  inset:34px auto 34px 4.5%;
+  width:min(38vw,560px);
   border-radius:30px;
-  background:#ddd1c4;
+  background:url('/assets/images/generated/specialist.webp') center 38%/cover no-repeat;
   box-shadow:0 28px 70px rgba(45,34,28,.13);
 }
-.expert-photo img{display:block;width:100%;height:100%;min-height:540px;object-fit:cover;object-position:center 38%}
-.expert-copy .kicker{margin-bottom:24px}
-.expert-copy h2{margin-top:0}
+#about .statement-grid{position:relative;z-index:1;padding-left:min(42vw,610px);grid-template-columns:120px minmax(0,1fr)}
+#about .statement-grid>div{padding:28px 0}
 
-/* Give every compact Journal item a real visual thumbnail as well. */
-.article-small{display:grid;grid-template-columns:150px 1fr;column-gap:22px;align-items:start}
-.article-small-thumb{grid-row:1 / span 5;width:150px;height:126px;border-radius:18px;overflow:hidden;background:#ddd1c4}
-.article-small-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+/* Every compact Journal item gets a photo even though the legacy markup is text-only. */
+.article-small{
+  position:relative;
+  padding-left:174px!important;
+  min-height:138px;
+}
+.article-small::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:150px;
+  height:126px;
+  border-radius:18px;
+  background:url('/assets/images/generated/products.webp') center/cover no-repeat;
+}
+.article-small:nth-child(even)::before{background-image:url('/assets/images/generated/specialist.webp')}
 
+@media(max-width:1100px){
+  #about::before{left:3%;width:38vw}
+  #about .statement-grid{padding-left:41vw;grid-template-columns:100px minmax(0,1fr)}
+}
 @media(max-width:900px){
   .hero-frame{inset:0 0 35px 0;border-radius:26px;background-position:center 50%}
-  .expert-feature{grid-template-columns:1fr;gap:30px}
-  .expert-photo,.expert-photo img{min-height:430px}
+  #about{padding-top:0}
+  #about::before{position:relative;display:block;inset:auto;width:calc(100% - 36px);height:480px;margin:0 18px 38px;background-position:center 30%}
+  #about .statement-grid{padding-left:0;grid-template-columns:1fr}
 }
 @media(max-width:620px){
-  .article-small{grid-template-columns:92px 1fr;column-gap:15px}
-  .article-small-thumb{width:92px;height:92px;border-radius:14px}
+  #about::before{height:390px;border-radius:22px}
+  .article-small{padding-left:108px!important;min-height:98px}
+  .article-small::before{width:92px;height:92px;border-radius:14px}
 }
