@@ -1,0 +1,92 @@
+name: Creative live QA
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/workflows/creative-live-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      BASE_URL: https://cosmetologist-dev.denisnazarov.online
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Static syntax checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check assets/js/app.js
+          find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l >/tmp/php-lint.log
+          cat /tmp/php-lint.log
+
+      - name: Live routes and assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(/ /services.php /price.php /cases.php /blog.php /videos.php /admin/)
+          for route in "${routes[@]}"; do
+            out="/tmp/page-$(echo "$route" | tr '/.' '--').html"
+            code="$(curl -L -sS -o "$out" -w '%{http_code}' --max-time 20 "${BASE_URL}${route}")"
+            echo "$route -> HTTP $code"
+            test "$code" = "200"
+            grep -qi '<html' "$out"
+          done
+
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/css/creative.css?v=1" -o /tmp/creative.css
+          grep -q 'creative editorial motion layer' /tmp/creative.css
+          curl -fsSL --max-time 20 "${BASE_URL}/assets/js/app.js?v=5" -o /tmp/app.js
+          grep -q 'ba-enhanced' /tmp/app.js
+          curl -fsSL --max-time 20 "${BASE_URL}/" -o /tmp/home.html
+          grep -q 'creative.css?v=1' /tmp/home.html
+          grep -q 'app.js?v=5' /tmp/home.html
+
+      - name: Headless Chrome interaction smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$CHROME"
+          echo "Using $CHROME"
+          "$CHROME" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --window-size=1440,1100 \
+            --virtual-time-budget=6000 \
+            --dump-dom "${BASE_URL}/?qa=creative" \
+            >/tmp/dom-desktop.html 2>/tmp/chrome-desktop.log
+          grep -q 'ba-enhanced' /tmp/dom-desktop.html
+          grep -q 'ba-range' /tmp/dom-desktop.html
+          grep -q 'motion-ready' /tmp/dom-desktop.html
+          if grep -Eqi 'Uncaught (SyntaxError|ReferenceError|TypeError)|SyntaxError:|ReferenceError:|TypeError:' /tmp/chrome-desktop.log; then
+            cat /tmp/chrome-desktop.log
+            exit 1
+          fi
+
+          "$CHROME" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --window-size=390,844 \
+            --virtual-time-budget=4500 \
+            --dump-dom "${BASE_URL}/?qa=mobile" \
+            >/tmp/dom-mobile.html 2>/tmp/chrome-mobile.log
+          grep -q 'ba-enhanced' /tmp/dom-mobile.html
+          grep -q 'main-nav' /tmp/dom-mobile.html
+          if grep -Eqi 'Uncaught (SyntaxError|ReferenceError|TypeError)|SyntaxError:|ReferenceError:|TypeError:' /tmp/chrome-mobile.log; then
+            cat /tmp/chrome-mobile.log
+            exit 1
+          fi
+          echo 'Live browser QA passed.'
