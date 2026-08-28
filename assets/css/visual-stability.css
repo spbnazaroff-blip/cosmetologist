@@ -14,6 +14,7 @@ body::before{position:absolute!important}
   box-shadow:0 14px 38px rgba(0,0,0,.22)!important;
 }
 
+.hero-copy::before{display:none!important}
 .hero::after{animation:none!important;opacity:.42!important;transform:none!important}
 .hero-frame{
   transform:scale(1.01)!important;
@@ -62,7 +63,6 @@ body::before{position:absolute!important}
 .video-poster img,.service-tile-image img{transition:transform .45s ease!important}
 .video-card:hover .video-poster img,.card:hover .service-tile-image img{transform:scale(1.018)!important}
 
-/* Never expose the old inconsistent studio reference in public article previews. */
 .article-small:nth-child(even)::before{background-image:url('/assets/generated/hq-specialist.php?v=1')!important}
 
 .before-after.ba-enhanced figure:nth-child(2){transition:none!important}
